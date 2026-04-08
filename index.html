@@ -1,0 +1,1470 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tra cứu xử phạt vi phạm hành chính</title>
+  <style>
+    :root{
+      --primary:#a11919;
+      --primary-dark:#7d1010;
+      --bg:#f4f6fb;
+      --card:#ffffff;
+      --text:#1d2433;
+      --muted:#667085;
+      --border:#dde3ee;
+      --success:#137333;
+      --warning:#b26a00;
+      --danger:#c62828;
+      --shadow:0 10px 30px rgba(16,24,40,.08);
+      --radius:18px;
+      --gold:#ffd700;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Times New Roman", Times, serif;
+      color:var(--text);
+      min-height:100vh;
+      position:relative;
+      background:#111;
+    }
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:
+        linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.35)),
+        url("pccc-bg.png") center/cover no-repeat;
+      filter:blur(7px) brightness(.65);
+      transform:scale(1.04);
+      z-index:-2;
+    }
+    body::after{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:linear-gradient(180deg, rgba(161,25,25,.14), rgba(0,0,0,.08));
+      z-index:-1;
+      pointer-events:none;
+    }
+    .top-unit{
+      text-align:center;
+      color:#ffffff;
+      padding:18px 12px 4px;
+      line-height:1.35;
+      text-shadow:0 2px 6px rgba(0,0,0,.45);
+      font-weight:700;
+      text-transform:uppercase;
+    }
+    .top-unit .line1,.top-unit .line2{font-size:28px;}
+    .topbar{
+      width:calc(100vw - 12px);
+      margin:8px auto 0;
+      background:linear-gradient(90deg, var(--primary-dark), var(--primary));
+      color:#fff;
+      padding:14px 20px;
+      box-shadow:0 6px 20px rgba(125,16,16,.2);
+      border-radius:18px;
+      display:flex;
+      align-items:center;
+      gap:16px;
+    }
+    .topbar-logo{
+      width:62px;
+      height:62px;
+      border-radius:12px;
+      background:rgba(255,255,255,.12);
+      border:1px solid rgba(255,255,255,.16);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex:0 0 auto;
+    }
+    .topbar-logo img{
+      width:100%;
+      height:100%;
+      object-fit:contain;
+      background:transparent;
+    }
+    .topbar-title{min-width:0;flex:1;}
+    .topbar h1{margin:0;font-size:28px;letter-spacing:.3px;text-transform:uppercase;}
+    .topbar .sub{margin-top:6px;opacity:.95;font-size:15px;}
+    .container{
+      width:calc(100vw - 12px);
+      margin:10px auto 14px;
+      padding:0 6px 28px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      width:100%;
+      align-items:start;
+    }
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      min-width:0;
+    }
+    .card-header{
+      padding:16px 20px;
+      border-bottom:1px solid var(--border);
+      background:#fff;
+    }
+    .card-header h2,.card-header h3{margin:0 0 4px 0;font-size:20px;}
+    .card-body{padding:14px 16px 16px;}
+    .search-card .card-body{padding:10px 14px 12px;}
+    .muted{color:var(--muted)}
+    .small{font-size:14px}
+    .status{
+      padding:12px 14px;
+      border-radius:12px;
+      margin-bottom:12px;
+      font-size:15px;
+      border:1px solid transparent;
+      line-height:1.45;
+    }
+    .status.info{background:#eef4ff;border-color:#d6e5ff;color:#194185}
+    .status.success{background:#ecfdf3;border-color:#ccebd8;color:#0f6d33}
+    .status.warning{background:#fff8e8;border-color:#f5e2a8;color:#8b5a00}
+    .status.error{background:#fff1f1;border-color:#f0c7c7;color:#a12626}
+    label{display:block;font-weight:700;margin:10px 0 6px;}
+    input[type="text"], input[type="search"]{
+      width:100%;
+      height:46px;
+      padding:12px 14px;
+      border:1px solid #cfd6e1;
+      border-radius:12px;
+      font-size:16px;
+      font-family:inherit;
+      background:#fff;
+      box-sizing:border-box;
+    }
+    button{
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      padding:11px 16px;
+      font-size:16px;
+      border-radius:12px;
+      cursor:pointer;
+      font-family:inherit;
+      transition:.18s ease;
+    }
+    button:hover{background:var(--primary-dark)}
+    button.secondary{background:#fff;color:var(--text);border:1px solid #ccd4e0;}
+    button.secondary:hover{background:#f7f8fa}
+    .flex{display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+    .subject-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:6px;}
+    .check-card{
+      display:flex;
+      align-items:center;
+      gap:10px;
+      width:100%;
+      min-height:46px;
+      height:46px;
+      margin:0;
+      font-weight:400;
+      border:1px solid #cfd6e1;
+      background:#fff;
+      border-radius:12px;
+      padding:10px 12px;
+      cursor:pointer;
+      user-select:none;
+      transition:.18s ease;
+      line-height:1.2;
+      box-sizing:border-box;
+    }
+    .check-card:hover{border-color:#d0b1b1;background:#fff8ec}
+    .check-card input{
+      width:16px;
+      height:16px;
+      margin:0;
+      flex:0 0 auto;
+      accent-color:var(--primary);
+      cursor:pointer;
+    }
+    .check-card span{font-weight:400;font-size:15px;line-height:1.2;display:inline-flex;align-items:center;}
+
+    .panel-box{
+      border:1px solid #e4e9f1;
+      border-radius:16px;
+      padding:16px;
+      background:#fbfcfe;
+    }
+    .search-toolbar{
+      display:grid;
+      grid-template-columns:minmax(250px,1fr) minmax(250px,1fr) minmax(250px,1fr) auto;
+      gap:10px;
+      align-items:end;
+      margin-top:0;
+    }
+    .search-field,
+    .search-actions{
+      min-width:0;
+    }
+    .search-field label,
+    .search-actions label{
+      margin-top:0;
+    }
+    .search-actions{
+      display:flex;
+      gap:10px;
+      align-items:end;
+      justify-content:flex-end;
+      flex-wrap:wrap;
+    }
+    .search-actions > div:only-child{
+      margin-left:auto;
+    }
+    .search-actions button{
+      min-width:140px;
+    }
+    .subject-grid.horizontal-subjects{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      margin-top:0;
+      gap:10px;
+      align-items:stretch;
+    }
+    .subject-grid.horizontal-subjects .check-card{
+      min-height:46px;
+      height:46px;
+      justify-content:flex-start;
+    }
+    .hint-box{
+      padding:14px;
+      border-radius:14px;
+      background:#fff8e8;
+      border:1px solid #f2dba4;
+      color:#7a5100;
+      margin-top:14px;
+      line-height:1.45;
+    }
+    .table-wrap{
+      border:1px solid #e1e7f0;
+      border-radius:16px;
+      overflow:auto;
+      max-height:72vh;
+      background:#fff;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:#fff;
+      min-width:1080px;
+    }
+    th, td{
+      border-bottom:1px solid #e6ebf3;
+      border-right:1px solid rgba(221,227,238,.6);
+      padding:8px 7px;
+      text-align:center;
+      font-size:15px;
+      vertical-align:middle;
+      line-height:1.45;
+    }
+    tr > *:last-child{border-right:none}
+    th{
+      background:#f8fafc;
+      position:sticky;
+      top:0;
+      z-index:1;
+    }
+    td.align-left, th.align-left{text-align:center}
+    .result-row:nth-child(odd) td{background:rgba(255,255,255,.96)}
+    .result-row:nth-child(even) td{background:rgba(255,245,204,.38)}
+    .empty-state{padding:28px 16px;text-align:center;color:var(--muted)}
+    .tag{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-width:100px;
+      padding:5px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+      border:1px solid transparent;
+      white-space:nowrap;
+    }
+    .tag.individual{background:#eef4ff;color:#194185;border-color:#d6e5ff}
+    .tag.organization{background:#fff8e8;color:#8b5a00;border-color:#f5e2a8}
+    .tag.both{background:#ecfdf3;color:#0f6d33;border-color:#ccebd8}
+    .cell-title{font-weight:700;color:#7d1010;line-height:1.35;text-align:center}
+    .cell-sub{margin-top:4px;color:#667085;font-size:14px;line-height:1.4;text-align:center}
+    .legal{font-size:13px;color:#344054;text-align:center}
+    .select-cell{width:54px;min-width:54px;max-width:54px;text-align:center !important;vertical-align:middle !important;white-space:nowrap;}
+    .violation-check{
+      width:18px;
+      height:18px;
+      accent-color:var(--primary);
+      cursor:pointer;
+    }
+    .selected-panel-head{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-bottom:10px;
+    }
+    .selected-summary-note{line-height:1.5;}
+    .result-header-bar{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+    .result-header-bar h2{margin:0 0 6px 0;}
+    .result-header-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .result-toolbar{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      flex-wrap:wrap;
+      margin:0 0 16px;
+    }
+    .selected-panel{margin-top:16px;}
+    .copyright{
+      text-align:center;
+      color:#fff;
+      padding:0 16px 22px;
+      font-style:italic;
+      text-shadow:0 2px 6px rgba(0,0,0,.45);
+    }
+    .hidden{display:none !important}
+    .modal-backdrop{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.48);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      z-index:3000;
+    }
+    .modal-card{
+      width:min(96vw, 1680px);
+      height:calc(100vh - 32px);
+      background:#fff;
+      border-radius:18px;
+      border:1px solid #e1e7f0;
+      box-shadow:0 20px 42px rgba(0,0,0,.24);
+      display:flex;
+      flex-direction:column;
+      overflow:hidden;
+    }
+    .modal-head{
+      padding:14px 18px 10px;
+      border-bottom:1px solid #e6ebf3;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      flex-wrap:wrap;
+      background:#fff;
+    }
+    .modal-head h3{margin:0;font-size:22px;}
+    .modal-actions{
+      display:flex;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+      margin-left:auto;
+    }
+    .modal-body{
+      padding:14px 18px 18px;
+      overflow:auto;
+      min-height:0;
+      flex:1;
+      background:#fbfcfe;
+    }
+    .selected-modal .table-wrap{
+      max-height:none;
+      height:100%;
+    }
+    .selected-modal .table-wrap table{
+      min-width:1160px;
+    }
+    .col-stt{width:1%;min-width:44px;max-width:64px;white-space:nowrap;}
+    .col-toggle{width:1%;min-width:52px;max-width:64px;white-space:nowrap;}
+    .col-money{width:1%;min-width:112px;max-width:148px;white-space:nowrap;}
+    .col-authority{width:1%;min-width:116px;max-width:152px;white-space:normal;}
+    .modal-summary-grid{
+      display:grid;
+      grid-template-columns:repeat(3,minmax(180px,1fr));
+      gap:10px;
+      margin:0 0 12px;
+    }
+    .modal-summary-box{
+      border:1px solid #e4e9f1;
+      border-radius:14px;
+      padding:12px 14px;
+      background:#fff;
+      text-align:center;
+    }
+    .modal-summary-box.summary-count{background:#eef4ff;border-color:#d6e5ff;}
+    .modal-summary-box.summary-amount{background:#ecfdf3;border-color:#ccebd8;}
+    .modal-summary-box.summary-authority{background:#fff8e8;border-color:#f5e2a8;}
+    .modal-summary-box .label{font-size:13px;color:var(--muted);margin-bottom:6px;}
+    .modal-summary-box .value{font-size:22px;font-weight:700;color:#7d1010;line-height:1.3;word-break:break-word;}
+    @media (max-width: 900px){
+      .modal-summary-grid{grid-template-columns:1fr;}
+    }
+    mark{background:#ffe08a;padding:0 2px;border-radius:3px}
+    @media (max-width: 1100px){
+            .search-toolbar{grid-template-columns:1fr 1fr;}
+      .search-actions{grid-column:1 / -1;justify-content:flex-start;}
+      .result-header-bar{align-items:flex-start;}
+      .result-header-actions{margin-left:0;}
+    }
+    @media (max-width: 640px){
+      .topbar{flex-direction:column;align-items:flex-start}
+      .topbar h1{font-size:22px}
+      .subject-grid{grid-template-columns:1fr}
+      .subject-grid.horizontal-subjects{grid-template-columns:1fr}
+      .search-toolbar{grid-template-columns:1fr;gap:12px;}
+      .search-actions{justify-content:stretch;}
+      .result-toolbar,
+      .result-header-actions{justify-content:stretch;width:100%;}
+            .flex.stack-mobile > *{width:100%}
+      .flex.stack-mobile button{width:100%}
+      .search-actions button{width:100%;min-width:0;}
+      .result-toolbar button,
+      .result-header-actions button{width:100%;min-width:0;}
+    }
+  </style>
+  
+</head>
+<body>
+
+  <div class="topbar">
+    <div class="topbar-logo">
+      <img src="logo-pccc.png" alt="Logo Cảnh sát PCCC" />
+    </div>
+    <div class="topbar-title">
+      <h1>Tra cứu xử phạt vi phạm hành chính</h1>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card search-card">
+        <div class="card-body">
+          <div class="search-toolbar">
+            <div class="search-field">
+              <label for="facilityName">Tên cơ sở</label>
+              <input id="facilityName" type="text" placeholder="Nhập tên cơ sở cần tra cứu" />
+            </div>
+            <div class="search-field">
+              <label>Đối tượng vi phạm</label>
+              <div class="subject-grid horizontal-subjects">
+                <label class="check-card" for="subjectIndividual">
+                  <input id="subjectIndividual" type="checkbox" />
+                  <span>Cá nhân</span>
+                </label>
+                <label class="check-card" for="subjectOrganization">
+                  <input id="subjectOrganization" type="checkbox" />
+                  <span>Tổ chức</span>
+                </label>
+              </div>
+            </div>
+            <div class="search-field">
+              <label for="keywordInput">Từ khóa hành vi vi phạm</label>
+              <input id="keywordInput" type="search" placeholder="Ví dụ: lối thoát nạn, bình chữa cháy, hồ sơ quản lý..." />
+            </div>
+            <div class="search-actions stack-mobile">
+              <div>
+                <label>&nbsp;</label>
+                <button id="btnReset" class="secondary" type="button">Xóa lọc</button>
+              </div>
+              <div>
+                <label>&nbsp;</label></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="result-header-bar">
+            <div>
+              <h2>Kết quả tra cứu</h2>
+              <div class="muted small" id="resultSub"></div>
+            </div>
+            <div class="result-header-actions">
+              <button id="btnShowSelectedViolations" type="button">Tổng hợp hành vi vi phạm</button>
+            </div>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="hidden"><span id="dataModeLabel"></span><span id="dataSourceLabel"></span><span id="personalModeNote"></span></div>
+
+          <div class="hidden">
+            <span id="totalLoaded">0</span>
+            <span id="totalMatched">0</span>
+            <span id="selectedSubjects">Không lọc</span>
+            <span id="facilityPreview">Chưa nhập</span>
+            <span id="selectedViolationCount">0</span>
+            <span id="resultSummaryText"></span>
+          </div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th class="col-stt">STT</th>
+                  <th class="select-cell col-toggle">Lỗi</th>
+                  <th class="align-left" style="min-width:150px;">Nhóm hành vi</th>
+                  <th class="align-left" style="min-width:260px;">Hành vi vi phạm</th>
+                  <th class="align-left col-money">Số tiền phạt</th>
+                  <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
+                  <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
+                  <th class="align-left col-authority">Thẩm quyền</th>
+                  <th class="align-left" style="min-width:180px;">Căn cứ</th>
+                </tr>
+              </thead>
+              <tbody id="resultBody">
+                <tr><td colspan="9"><div class="empty-state">Nhập từ khóa để tra cứu.</div></td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          
+          <div class="modal-backdrop hidden" id="selectedViolationModal">
+            <div class="modal-card selected-modal" role="dialog" aria-modal="true" aria-labelledby="selectedViolationModalTitle">
+              <div class="modal-head">
+                <div>
+                  <h3 id="selectedViolationModalTitle">Tổng hợp hành vi vi phạm</h3>
+                  <div class="muted small selected-summary-note" id="selectedViolationSummaryText">Chưa tích lỗi nào trong danh sách tra cứu.</div>
+                </div>
+                <div class="modal-actions">
+                  <button id="btnPrintSelectedViolations" class="secondary" type="button">In danh sách</button>
+                  <button id="btnExportSelectedViolations" class="secondary" type="button">Xuất Excel</button>
+                  <button id="btnClearSelectedViolations" class="secondary" type="button">Xóa danh sách đã tích</button>
+                  <button id="btnCloseSelectedViolations" class="secondary" type="button">Đóng</button>
+                </div>
+              </div>
+              <div class="modal-body">
+                <div class="modal-summary-grid">
+                  <div class="modal-summary-box summary-count">
+                    <div class="label">Số lỗi vi phạm</div>
+                    <div class="value" id="selectedSummaryCount">0</div>
+                  </div>
+                  <div class="modal-summary-box summary-amount">
+                    <div class="label">Tổng số tiền phạt</div>
+                    <div class="value" id="selectedSummaryAmount">0</div>
+                  </div>
+                  <div class="modal-summary-box summary-authority">
+                    <div class="label">Thẩm quyền xử phạt</div>
+                    <div class="value" id="selectedSummaryAuthority">Chưa xác định</div>
+                  </div>
+                </div>
+                <div class="table-wrap">
+                  <table>
+                    <thead>
+                      <tr>
+                        <th class="col-stt">STT</th>
+                        <th class="select-cell col-toggle">Lỗi</th>
+                        <th class="align-left" style="min-width:150px;">Nhóm hành vi</th>
+                        <th class="align-left" style="min-width:260px;">Hành vi vi phạm</th>
+                        <th class="align-left col-money">Số tiền phạt</th>
+                        <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
+                        <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
+                        <th class="align-left col-authority">Thẩm quyền</th>
+                        <th class="align-left" style="min-width:180px;">Căn cứ</th>
+                      </tr>
+                    </thead>
+                    <tbody id="selectedViolationBody">
+                      <tr><td colspan="9"><div class="empty-state">Chưa tích lỗi nào.</div></td></tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="copyright">Design by Đội 2, Phòng PC07 Quảng Ninh</div>
+
+  <script>
+    (() => {
+      const EXCEL_FILE = 'XPHC.xlsx';
+      const state = {
+        records: [],
+        filtered: [],
+        selectedViolations: {},
+        selectedPanelVisible: false,
+        loadedFrom: '',
+        fileName: EXCEL_FILE,
+        dataMode: 'common'
+      };
+
+      const $ = (id) => document.getElementById(id);
+
+      function setNodeText(id, value) {
+        const node = $(id);
+        if (node) node.textContent = String(value ?? '');
+      }
+
+      const HEADER_ALIASES = {
+        stt: ['stt', 'so thu tu'],
+        group: ['nhom hanh vi', 'nhom vi pham', 'nhom'],
+        behavior: ['hanh vi vi pham', 'hanh vi', 'noi dung vi pham', 'mo ta hanh vi'],
+        fineUpper: ['muc phat tren', 'muc phat toi da', 'muc phat cao nhat', 'muc phat den'],
+        fineLower: ['muc phat duoi', 'muc phat toi thieu', 'muc phat tu', 'muc phat thap nhat'],
+        extraPenalty: ['hinh thuc xu phat bo sung', 'xu phat bo sung', 'hinh thuc bo sung'],
+        remedy: ['bien phap khac phuc hau qua', 'khac phuc hau qua', 'bien phap khac phuc'],
+        authority: ['tham quyen', 'co quan co tham quyen', 'tham quyen xu phat', 'nguoi co tham quyen'],
+        legalBasis: ['can cu', 'can cu phap ly', 'dieu khoan', 'quy dinh'],
+        subject: ['doi tuong', 'chu the', 'ap dung cho', 'loai doi tuong'],
+        fineIndividual: ['muc phat ca nhan', 'phat ca nhan', 'muc phat doi voi ca nhan'],
+        fineOrganization: ['muc phat to chuc', 'phat to chuc', 'muc phat doi voi to chuc'],
+        fineIndividualLower: ['muc phat ca nhan tu', 'ca nhan tu'],
+        fineIndividualUpper: ['muc phat ca nhan den', 'ca nhan den'],
+        fineOrganizationLower: ['muc phat to chuc tu', 'to chuc tu'],
+        fineOrganizationUpper: ['muc phat to chuc den', 'to chuc den']
+      };
+
+      function normalizeText(value) {
+        return String(value || '')
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/đ/g, 'd')
+          .replace(/[^a-z0-9]+/g, ' ')
+          .trim();
+      }
+
+      function escapeHtml(value) {
+        return String(value ?? '')
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      function setLoadStatus() {}
+
+      function readLocalPrefs() {
+        try {
+          const raw = localStorage.getItem(LOCAL_PREF_KEY);
+          if (!raw) return {};
+          const parsed = JSON.parse(raw);
+          return parsed && typeof parsed === 'object' ? parsed : {};
+        } catch (error) {
+          return {};
+        }
+      }
+
+      function saveLocalPrefs() {
+        try {
+          const payload = {
+            facilityName: $('facilityName').value || '',
+            keyword: $('keywordInput').value || '',
+            subjectIndividual: !!$('subjectIndividual').checked,
+            subjectOrganization: !!$('subjectOrganization').checked
+          };
+          localStorage.setItem(LOCAL_PREF_KEY, JSON.stringify(payload));
+        } catch (error) {}
+      }
+
+      function applyLocalPrefs() {
+        const prefs = readLocalPrefs();
+        if (typeof prefs.facilityName === 'string') $('facilityName').value = prefs.facilityName;
+        if (typeof prefs.keyword === 'string') $('keywordInput').value = prefs.keyword;
+        if (typeof prefs.subjectIndividual === 'boolean') $('subjectIndividual').checked = prefs.subjectIndividual;
+        if (typeof prefs.subjectOrganization === 'boolean') $('subjectOrganization').checked = prefs.subjectOrganization;
+      }
+
+      function updateDataModeUI() {
+        const modeLabel = $('dataModeLabel');
+        const sourceLabel = $('dataSourceLabel');
+        const noteLabel = $('personalModeNote');
+        if (modeLabel) modeLabel.textContent = '';
+        if (sourceLabel) sourceLabel.textContent = '';
+        if (noteLabel) noteLabel.textContent = '';
+      }
+
+      function getSelectedSubjectValues() {
+        const subjects = [];
+        if ($('subjectIndividual').checked) subjects.push('ca_nhan');
+        if ($('subjectOrganization').checked) subjects.push('to_chuc');
+        return subjects;
+      }
+
+      function updateSelectedSubjectLabel() {
+        const subjects = getSelectedSubjectValues();
+        let label = 'Không lọc';
+        if (subjects.length === 2) label = 'Cả hai';
+        else if (subjects[0] === 'ca_nhan') label = 'Cá nhân';
+        else if (subjects[0] === 'to_chuc') label = 'Tổ chức';
+        setNodeText('selectedSubjects', label);
+      }
+
+      function updateFacilityPreview() {
+        const value = $('facilityName').value.trim();
+        setNodeText('facilityPreview', value || 'Chưa nhập');
+      }
+
+      function getRowValue(row, aliases) {
+        const keys = Object.keys(row || {});
+        for (const alias of aliases) {
+          const target = normalizeText(alias);
+          const matchedKey = keys.find((key) => normalizeText(key) === target);
+          if (matchedKey) return row[matchedKey];
+        }
+        return '';
+      }
+
+      function getRowValueByIncludes(row, tokenGroups) {
+        const entries = Object.entries(row || {});
+        for (const [key, value] of entries) {
+          const normalizedKey = normalizeText(key);
+          const matched = tokenGroups.some((tokens) => tokens.every((token) => normalizedKey.includes(normalizeText(token))));
+          if (matched) return value;
+        }
+        return '';
+      }
+
+      function normalizePenaltyDisplay(value) {
+        const text = String(value || '').trim();
+        if (!text) return '';
+        return text
+          .replace(/^Từ\s+/i, '')
+          .replace(/\s+đến\s+/gi, ' - ')
+          .replace(/^Đến\s+/i, '')
+          .replace(/\s{2,}/g, ' ')
+          .trim();
+      }
+
+      function formatRange(lower, upper) {
+        const min = normalizePenaltyDisplay(lower);
+        const max = normalizePenaltyDisplay(upper);
+        if (min && max) return min + ' - ' + max;
+        if (min) return min;
+        if (max) return max;
+        return '';
+      }
+
+      function detectSubjectType(record) {
+        const subjectText = normalizeText(record.subject);
+        if (subjectText.includes('ca nhan') && subjectText.includes('to chuc')) return 'both';
+        if (subjectText.includes('ca nhan')) return 'ca_nhan';
+        if (subjectText.includes('to chuc')) return 'to_chuc';
+        const hasIndividual = !!(record.fineIndividual || record.fineIndividualRange);
+        const hasOrganization = !!(record.fineOrganization || record.fineOrganizationRange);
+        if (hasIndividual && hasOrganization) return 'both';
+        if (hasIndividual) return 'ca_nhan';
+        if (hasOrganization) return 'to_chuc';
+        return 'unknown';
+      }
+
+      function normalizeRecord(row) {
+        const record = {
+          stt: String(getRowValue(row, HEADER_ALIASES.stt) || '').trim(),
+          group: String(getRowValue(row, HEADER_ALIASES.group) || '').trim(),
+          behavior: String(getRowValue(row, HEADER_ALIASES.behavior) || '').trim(),
+          fineUpper: String(getRowValue(row, HEADER_ALIASES.fineUpper) || '').trim(),
+          fineLower: String(getRowValue(row, HEADER_ALIASES.fineLower) || '').trim(),
+          extraPenalty: String(getRowValue(row, HEADER_ALIASES.extraPenalty) || '').trim(),
+          remedy: String(getRowValue(row, HEADER_ALIASES.remedy) || '').trim(),
+          authority: String(getRowValue(row, HEADER_ALIASES.authority) || '').trim(),
+          legalBasis: String(getRowValue(row, HEADER_ALIASES.legalBasis) || '').trim(),
+          subject: String(getRowValue(row, HEADER_ALIASES.subject) || '').trim(),
+          fineIndividual: String(getRowValue(row, HEADER_ALIASES.fineIndividual) || getRowValueByIncludes(row, [['ca nhan'], ['phat', 'ca nhan']]) || '').trim(),
+          fineOrganization: String(getRowValue(row, HEADER_ALIASES.fineOrganization) || getRowValueByIncludes(row, [['to chuc'], ['phat', 'to chuc']]) || '').trim(),
+          fineIndividualLower: String(getRowValue(row, HEADER_ALIASES.fineIndividualLower) || '').trim(),
+          fineIndividualUpper: String(getRowValue(row, HEADER_ALIASES.fineIndividualUpper) || '').trim(),
+          fineOrganizationLower: String(getRowValue(row, HEADER_ALIASES.fineOrganizationLower) || '').trim(),
+          fineOrganizationUpper: String(getRowValue(row, HEADER_ALIASES.fineOrganizationUpper) || '').trim()
+        };
+
+        record.fineIndividual = normalizePenaltyDisplay(record.fineIndividual);
+        record.fineOrganization = normalizePenaltyDisplay(record.fineOrganization);
+        record.fineLower = normalizePenaltyDisplay(record.fineLower);
+        record.fineUpper = normalizePenaltyDisplay(record.fineUpper);
+        record.fineIndividualLower = normalizePenaltyDisplay(record.fineIndividualLower);
+        record.fineIndividualUpper = normalizePenaltyDisplay(record.fineIndividualUpper);
+        record.fineOrganizationLower = normalizePenaltyDisplay(record.fineOrganizationLower);
+        record.fineOrganizationUpper = normalizePenaltyDisplay(record.fineOrganizationUpper);
+        record.genericRange = formatRange(record.fineLower, record.fineUpper);
+        record.fineIndividualRange = formatRange(record.fineIndividualLower, record.fineIndividualUpper);
+        record.fineOrganizationRange = formatRange(record.fineOrganizationLower, record.fineOrganizationUpper);
+        record.subjectType = detectSubjectType(record);
+        record.id = getRecordId(record);
+        record.behaviorIndex = normalizeText(record.behavior);
+
+        const hasContent = [record.group, record.behavior, record.extraPenalty, record.remedy, record.authority, record.legalBasis, record.genericRange, record.fineIndividual, record.fineOrganization].some(Boolean);
+        return hasContent ? record : null;
+      }
+
+      function getRecordId(record) {
+        return normalizeText([
+          record.stt,
+          record.group,
+          record.behavior,
+          record.subject,
+          record.legalBasis,
+          record.extraPenalty,
+          record.remedy,
+          record.authority
+        ].join('|'));
+      }
+
+      function setSelectedPanelVisible(visible) {
+        state.selectedPanelVisible = !!visible;
+        const modal = $('selectedViolationModal');
+        if (modal) modal.classList.toggle('hidden', !state.selectedPanelVisible);
+      }
+
+      function showSelectedViolationPanel() {
+        const items = getSelectedViolationItems();
+        if (!items.length) return;
+        renderSelectedViolationTable();
+        setSelectedPanelVisible(true);
+      }
+
+      function closeSelectedViolationPanel() {
+        setSelectedPanelVisible(false);
+      }
+
+      function clearSelectedViolations() {
+        state.selectedViolations = {};
+        renderSelectedViolationTable();
+      }
+
+      function getSelectedViolationItems() {
+        return Object.values(state.selectedViolations || {});
+      }
+
+      function toggleSelectedViolation(record, isChecked) {
+        const id = record.id || getRecordId(record);
+        if (!id) return;
+        if (isChecked) {
+          state.selectedViolations[id] = {
+            id,
+            facilityName: $('facilityName').value.trim(),
+            record: { ...record }
+          };
+        } else {
+          delete state.selectedViolations[id];
+        }
+        renderSelectedViolationTable();
+      }
+
+      function renderSelectedViolationTable() {
+        const body = $('selectedViolationBody');
+        const summary = $('selectedViolationSummaryText');
+        const showButton = $('btnShowSelectedViolations');
+        if (!body || !summary) return;
+        const items = getSelectedViolationItems();
+        setNodeText('selectedViolationCount', String(items.length));
+        if (showButton) {
+          showButton.textContent = items.length ? 'Tổng hợp hành vi vi phạm (' + items.length + ')' : 'Tổng hợp hành vi vi phạm';
+        }
+        const totalPenalty = items.reduce((sum, item) => sum + (getPenaltyAmountData(item.record || {}, getSelectedSubjectValues()).total || 0), 0);
+        setNodeText('selectedSummaryCount', String(items.length));
+        setNodeText('selectedSummaryAmount', items.length ? formatMoneyNumber(totalPenalty) : '0');
+        setNodeText('selectedSummaryAuthority', getHighestAuthorityText(items));
+        if (!items.length) {
+          summary.textContent = 'Chưa tích lỗi nào trong danh sách tra cứu.';
+          body.innerHTML = '<tr><td colspan="9"><div class="empty-state">Chưa tích lỗi nào.</div></td></tr>';
+          setSelectedPanelVisible(false);
+          return;
+        }
+        summary.textContent = '';
+        body.innerHTML = items.map((item, index) => {
+          const record = item.record || {};
+          return `
+            <tr class="result-row">
+              <td class="col-stt">${index + 1}</td>
+              <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" checked></td>
+              <td class="align-left">${escapeHtml(record.group || '-')}</td>
+              <td class="align-left">${escapeHtml(record.behavior || '-')}</td>
+              <td class="align-left col-money">${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
+              <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
+              <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
+              <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
+              <td class="align-left legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
+            </tr>`;
+        }).join('');
+      }
+
+      function getDisplaySubjectTag(record) {
+        if (record.subjectType === 'ca_nhan') return '<span class="tag individual">Cá nhân</span>';
+        if (record.subjectType === 'to_chuc') return '<span class="tag organization">Tổ chức</span>';
+        if (record.subjectType === 'both') return '<span class="tag both">Cả hai</span>';
+        return '<span class="tag both">Theo dữ liệu</span>';
+      }
+
+      function buildFineHtml(record, selectedSubjects) {
+        const lines = [];
+        const showIndividual = selectedSubjects.includes('ca_nhan');
+        const showOrganization = selectedSubjects.includes('to_chuc');
+        const individualText = record.fineIndividual || record.fineIndividualRange;
+        const organizationText = record.fineOrganization || record.fineOrganizationRange;
+
+        if (!showIndividual && !showOrganization) {
+          if (individualText) {
+            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+          }
+          if (organizationText) {
+            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+          }
+        } else {
+          if (showIndividual && individualText) {
+            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+          }
+          if (showOrganization && organizationText) {
+            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+          }
+        }
+        if (!lines.length && record.genericRange) {
+          lines.push('<div>' + escapeHtml(record.genericRange) + '</div>');
+        }
+        if (!lines.length && record.fineLower && !record.fineUpper) {
+          lines.push('<div>' + escapeHtml(record.fineLower) + '</div>');
+        }
+        if (!lines.length && record.fineUpper && !record.fineLower) {
+          lines.push('<div>' + escapeHtml(record.fineUpper) + '</div>');
+        }
+        return lines.join('') || '<span class="muted">Chưa có dữ liệu mức phạt</span>';
+      }
+
+      function parseMoneyNumber(value) {
+        const raw = String(value || '').trim();
+        if (!raw) return NaN;
+        const digits = raw.replace(/[^\d]/g, '');
+        if (!digits) return NaN;
+        const num = Number(digits);
+        return Number.isFinite(num) ? num : NaN;
+      }
+
+      function formatMoneyNumber(value) {
+        const num = Number(value);
+        if (!Number.isFinite(num)) return '';
+        return Math.round(num).toLocaleString('en-US');
+      }
+
+      const AUTHORITY_RANK_RULES = [
+        { rank: 1, patterns: [['bo truong']] },
+        { rank: 2, patterns: [['chu tich','uy ban nhan dan','tinh'], ['chu tich','ubnd','tinh'], ['chu tich','thanh pho truc thuoc trung uong']] },
+        { rank: 3, patterns: [['giam doc','cong an','tinh'], ['giam doc','cong an','thanh pho']] },
+        { rank: 4, patterns: [['chu tich','uy ban nhan dan','huyen'], ['chu tich','ubnd','huyen'], ['chu tich','uy ban nhan dan','quan'], ['chu tich','ubnd','quan'], ['chu tich','uy ban nhan dan','thi xa'], ['chu tich','ubnd','thi xa']] },
+        { rank: 5, patterns: [['truong','cong an','huyen'], ['truong','cong an','quan'], ['truong','cong an','thi xa'], ['truong','phong']] },
+        { rank: 6, patterns: [['chu tich','uy ban nhan dan','xa'], ['chu tich','ubnd','xa'], ['chu tich','uy ban nhan dan','phuong'], ['chu tich','ubnd','phuong'], ['chu tich','uy ban nhan dan','thi tran'], ['chu tich','ubnd','thi tran']] },
+        { rank: 7, patterns: [['truong','cong an','xa'], ['truong','cong an','phuong'], ['truong','cong an','thi tran']] }
+      ];
+
+      function getAuthorityRank(authorityText) {
+        const normalized = normalizeText(authorityText);
+        if (!normalized) return Number.POSITIVE_INFINITY;
+        for (const rule of AUTHORITY_RANK_RULES) {
+          if (rule.patterns.some((tokens) => tokens.every((token) => normalized.includes(token)))) {
+            return rule.rank;
+          }
+        }
+        return 999;
+      }
+
+      function getHighestAuthorityText(items) {
+        const authorities = (items || []).map((item) => String(item?.record?.authority || '').trim()).filter(Boolean);
+        if (!authorities.length) return 'Chưa xác định';
+        let best = authorities[0];
+        let bestRank = getAuthorityRank(best);
+        for (const authority of authorities.slice(1)) {
+          const rank = getAuthorityRank(authority);
+          if (rank < bestRank) {
+            bestRank = rank;
+            best = authority;
+          }
+        }
+        return best || 'Chưa xác định';
+      }
+
+      function resolvePenaltyBounds(record, subjectMode) {
+        const lowerCandidates = [];
+        const upperCandidates = [];
+
+        if (subjectMode === 'ca_nhan') {
+          lowerCandidates.push(record.fineIndividualLower, record.fineLower);
+          upperCandidates.push(record.fineIndividualUpper, record.fineUpper);
+        } else if (subjectMode === 'to_chuc') {
+          lowerCandidates.push(record.fineOrganizationLower, record.fineLower);
+          upperCandidates.push(record.fineOrganizationUpper, record.fineUpper);
+        } else {
+          lowerCandidates.push(record.fineLower, record.fineIndividualLower, record.fineOrganizationLower);
+          upperCandidates.push(record.fineUpper, record.fineIndividualUpper, record.fineOrganizationUpper);
+        }
+
+        let lower = NaN;
+        let upper = NaN;
+
+        for (const value of lowerCandidates) {
+          const parsed = parseMoneyNumber(value);
+          if (Number.isFinite(parsed)) {
+            lower = parsed;
+            break;
+          }
+        }
+        for (const value of upperCandidates) {
+          const parsed = parseMoneyNumber(value);
+          if (Number.isFinite(parsed)) {
+            upper = parsed;
+            break;
+          }
+        }
+
+        return { lower, upper };
+      }
+
+      function getPenaltyAmountData(record, selectedSubjects) {
+        const hasIndividual = selectedSubjects.includes('ca_nhan');
+        const hasOrganization = selectedSubjects.includes('to_chuc');
+
+        if (hasIndividual && !hasOrganization) {
+          const { lower, upper } = resolvePenaltyBounds(record, 'ca_nhan');
+          if (Number.isFinite(lower) && Number.isFinite(upper)) {
+            const value = (lower + upper) / 2;
+            return { text: formatMoneyNumber(value), total: value };
+          }
+          return { text: 'Chưa xác định', total: 0 };
+        }
+
+        if (hasOrganization && !hasIndividual) {
+          const { lower, upper } = resolvePenaltyBounds(record, 'to_chuc');
+          if (Number.isFinite(lower) && Number.isFinite(upper)) {
+            const value = lower + upper;
+            return { text: formatMoneyNumber(value), total: value };
+          }
+          return { text: 'Chưa xác định', total: 0 };
+        }
+
+        if (hasIndividual && hasOrganization) {
+          const individualBounds = resolvePenaltyBounds(record, 'ca_nhan');
+          const organizationBounds = resolvePenaltyBounds(record, 'to_chuc');
+          const individualValue = (Number.isFinite(individualBounds.lower) && Number.isFinite(individualBounds.upper))
+            ? (individualBounds.lower + individualBounds.upper) / 2
+            : NaN;
+          const organizationValue = (Number.isFinite(organizationBounds.lower) && Number.isFinite(organizationBounds.upper))
+            ? organizationBounds.lower + organizationBounds.upper
+            : NaN;
+          const parts = [];
+          let total = 0;
+          if (Number.isFinite(individualValue)) {
+            parts.push('Cá nhân: ' + formatMoneyNumber(individualValue));
+            total += individualValue;
+          } else {
+            parts.push('Cá nhân: Chưa xác định');
+          }
+          if (Number.isFinite(organizationValue)) {
+            parts.push('Tổ chức: ' + formatMoneyNumber(organizationValue));
+            total += organizationValue;
+          } else {
+            parts.push('Tổ chức: Chưa xác định');
+          }
+          return { text: parts.join('\n'), total };
+        }
+
+        return { text: 'Chọn Cá nhân hoặc Tổ chức', total: 0 };
+      }
+
+      function getPenaltyAmountText(record, selectedSubjects) {
+        return getPenaltyAmountData(record, selectedSubjects).text;
+      }
+
+      function buildFineText(record, selectedSubjects) {
+        const lines = [];
+        const showIndividual = selectedSubjects.includes('ca_nhan');
+        const showOrganization = selectedSubjects.includes('to_chuc');
+        const individualText = record.fineIndividual || record.fineIndividualRange;
+        const organizationText = record.fineOrganization || record.fineOrganizationRange;
+
+        if (!showIndividual && !showOrganization) {
+          if (individualText) lines.push('Cá nhân: ' + individualText);
+          if (organizationText) lines.push('Tổ chức: ' + organizationText);
+        } else {
+          if (showIndividual && individualText) lines.push('Cá nhân: ' + individualText);
+          if (showOrganization && organizationText) lines.push('Tổ chức: ' + organizationText);
+        }
+        if (!lines.length && record.genericRange) lines.push(record.genericRange);
+        if (!lines.length && record.fineLower && !record.fineUpper) lines.push(record.fineLower);
+        if (!lines.length && record.fineUpper && !record.fineLower) lines.push(record.fineUpper);
+        return lines.join('\n') || 'Chưa có dữ liệu mức phạt';
+      }
+
+      function getSelectedViolationExportRows() {
+        return getSelectedViolationItems().map((item, index) => {
+          const record = item.record || {};
+          return {
+            'STT': String(index + 1),
+            'Nhóm hành vi': record.group || '',
+            'Hành vi vi phạm': record.behavior || '',
+            'Số tiền phạt': getPenaltyAmountText(record, getSelectedSubjectValues()),
+            'Hình thức xử phạt bổ sung': record.extraPenalty || 'Không có',
+            'Biện pháp khắc phục hậu quả': record.remedy || 'Không có',
+            'Thẩm quyền': record.authority || 'Không có',
+            'Căn cứ': record.legalBasis || ''
+          };
+        });
+      }
+
+      function printSelectedViolations() {
+        const items = getSelectedViolationItems();
+        if (!items.length) return;
+        const rowsHtml = items.map((item, index) => {
+          const record = item.record || {};
+          return `
+            <tr>
+              <td class="col-stt">${index + 1}</td>
+              <td>${escapeHtml(record.group || '-')}</td>
+              <td>${escapeHtml(record.behavior || '-')}</td>
+              <td>${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
+              <td>${escapeHtml(record.extraPenalty || 'Không có')}</td>
+              <td>${escapeHtml(record.remedy || 'Không có')}</td>
+              <td>${escapeHtml(record.authority || 'Không có')}</td>
+              <td>${escapeHtml(record.legalBasis || '')}</td>
+            </tr>`;
+        }).join('');
+        const win = window.open('', '_blank', 'width=1400,height=900');
+        if (!win) return;
+        win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Tổng hợp hành vi vi phạm</title>
+<style>
+  body{font-family:"Times New Roman", Times, serif; margin:24px; color:#111;}
+  h1{margin:0 0 8px; text-align:center; font-size:24px;}
+  .meta{margin:0 0 14px; text-align:center; font-size:14px;}
+  table{width:100%; border-collapse:collapse; table-layout:fixed;}
+  th,td{border:1px solid #999; padding:8px 6px; font-size:13px; vertical-align:middle; line-height:1.35;}
+  th{text-align:center; background:#f4f4f4;}
+  td{text-align:left; white-space:pre-wrap;}
+  td:first-child, th:first-child{text-align:center; width:48px;}
+</style>
+</head>
+<body>
+  <h1>TỔNG HỢP HÀNH VI VI PHẠM</h1>
+  <div class="meta">Số lỗi vi phạm: ${items.length} | Tổng số tiền phạt: ${escapeHtml(formatMoneyNumber(items.reduce((sum, item) => sum + (getPenaltyAmountData(item.record || {}, getSelectedSubjectValues()).total || 0), 0)))} | Thẩm quyền xử phạt: ${escapeHtml(getHighestAuthorityText(items))}</div>
+  <table>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Nhóm hành vi</th>
+        <th>Hành vi vi phạm</th>
+        <th>Số tiền phạt</th>
+        <th>Hình thức xử phạt bổ sung</th>
+        <th>Biện pháp khắc phục hậu quả</th>
+        <th>Thẩm quyền</th>
+        <th>Căn cứ</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+</body>
+</html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { try { win.print(); } catch (e) {} }, 300);
+      }
+
+      async function exportSelectedViolationsExcel() {
+        const rows = getSelectedViolationExportRows();
+        if (!rows.length) return;
+        await ensureXlsxLibrary();
+        const worksheet = XLSX.utils.json_to_sheet(rows);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Tong_hop_vi_pham');
+        XLSX.writeFile(workbook, 'tong_hop_hanh_vi_vi_pham.xlsx');
+      }
+
+      function highlightText(text, keyword) {
+        const raw = String(text || '');
+        const query = String(keyword || '').trim();
+        if (!query) return escapeHtml(raw);
+        const words = Array.from(new Set(query.split(/\s+/).map((item) => item.trim()).filter(Boolean)));
+        if (!words.length) return escapeHtml(raw);
+        let html = escapeHtml(raw);
+        words.forEach((word) => {
+          const escaped = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const regex = new RegExp('(' + escaped + ')', 'gi');
+          html = html.replace(regex, '<mark>$1</mark>');
+        });
+        return html;
+      }
+
+      function recordMatchesSubject(record, selectedSubjects) {
+        if (!selectedSubjects.length) return true;
+        if (record.subjectType === 'unknown' || record.subjectType === 'both') return true;
+        return selectedSubjects.includes(record.subjectType);
+      }
+
+      function runSearch() {
+        const keyword = $('keywordInput').value.trim();
+        const normalizedKeyword = normalizeText(keyword);
+        const selectedSubjects = getSelectedSubjectValues();
+        const facilityName = $('facilityName').value.trim();
+
+        updateSelectedSubjectLabel();
+        updateFacilityPreview();
+
+        if (!normalizedKeyword) {
+          state.filtered = [];
+          setNodeText('totalMatched', '0');
+          setNodeText('resultSummaryText', '');
+          setNodeText('resultSub', '');
+          $('resultBody').innerHTML = '<tr><td colspan="9"><div class="empty-state">Nhập từ khóa để tra cứu.</div></td></tr>';
+          renderSelectedViolationTable();
+          return;
+        }
+
+        let results = state.records;
+        if (selectedSubjects.length) {
+          results = results.filter((record) => recordMatchesSubject(record, selectedSubjects));
+        }
+        results = results.filter((record) => (record.behaviorIndex || '').includes(normalizedKeyword));
+
+        state.filtered = results;
+        setNodeText('totalMatched', String(results.length));        setNodeText('resultSummaryText', '');
+        setNodeText('resultSub', '');
+
+        if (!results.length) {
+          $('resultBody').innerHTML = '<tr><td colspan="9"><div class="empty-state">Không có dữ liệu phù hợp.</div></td></tr>';
+          renderSelectedViolationTable();
+          return;
+        }
+
+        $('resultBody').innerHTML = results.map((record, index) => {
+          const checked = !!state.selectedViolations[record.id];
+          return `
+          <tr class="result-row">
+            <td class="col-stt">${index + 1}</td>
+            <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" ${checked ? 'checked' : ''}></td>
+            <td class="align-left">
+              <div class="cell-title">${escapeHtml(record.group || '-')}</div>
+            </td>
+            <td class="align-left">
+              <div class="cell-title">${highlightText(record.behavior || '-', keyword)}</div>
+            </td>
+            <td class="align-left col-money">${buildFineHtml(record, selectedSubjects)}</td>
+            <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
+            <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
+            <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
+            <td class="align-left legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
+          </tr>`;
+        }).join('');
+        renderSelectedViolationTable();
+      }
+
+      function resetFilters() {
+        $('facilityName').value = '';
+        $('keywordInput').value = '';
+        $('subjectIndividual').checked = false;
+        $('subjectOrganization').checked = false;
+        updateFacilityPreview();
+        updateSelectedSubjectLabel();
+        runSearch();
+      }
+
+      function readWorkbook(workbook) {
+        const firstSheetName = workbook.SheetNames && workbook.SheetNames.length ? workbook.SheetNames[0] : null;
+        if (!firstSheetName) throw new Error('Không tìm thấy sheet dữ liệu trong file Excel.');
+        const worksheet = workbook.Sheets[firstSheetName];
+        const rows = XLSX.utils.sheet_to_json(worksheet, { defval: '' });
+        const records = rows.map(normalizeRecord).filter(Boolean);
+        state.records = records;
+        state.selectedViolations = {};
+        setSelectedPanelVisible(false);
+        setNodeText('totalLoaded', String(records.length));
+        renderSelectedViolationTable();
+        runSearch();
+        return records;
+      }
+
+      let xlsxLibraryPromise = null;
+
+      function loadScript(url) {
+        return new Promise((resolve, reject) => {
+          const script = document.createElement('script');
+          script.src = url;
+          script.async = true;
+          script.onload = () => resolve(url);
+          script.onerror = () => reject(new Error('Không tải được thư viện từ ' + url));
+          document.head.appendChild(script);
+        });
+      }
+
+      async function ensureXlsxLibrary() {
+        if (window.XLSX && window.XLSX.read && window.XLSX.utils) return;
+        if (xlsxLibraryPromise) {
+          await xlsxLibraryPromise;
+          return;
+        }
+        const sources = [
+          'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+          'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js',
+          'https://unpkg.com/xlsx@0.18.5/dist/xlsx.full.min.js'
+        ];
+        xlsxLibraryPromise = (async () => {
+          let lastError = null;
+          for (const url of sources) {
+            try {
+              await loadScript(url);
+              if (window.XLSX && window.XLSX.read && window.XLSX.utils) return;
+            } catch (error) {
+              lastError = error;
+            }
+          }
+          throw lastError || new Error('Không nạp được thư viện đọc Excel trên trình duyệt.');
+        })();
+        await xlsxLibraryPromise;
+      }
+
+      function readFileAsArrayBuffer(file) {
+        return new Promise((resolve, reject) => {
+          if (!file) {
+            reject(new Error('Chưa chọn file Excel.'));
+            return;
+          }
+          if (typeof file.arrayBuffer === 'function') {
+            file.arrayBuffer().then(resolve).catch(() => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result);
+              reader.onerror = () => reject(new Error('Không đọc được nội dung file Excel.'));
+              reader.readAsArrayBuffer(file);
+            });
+            return;
+          }
+          const reader = new FileReader();
+          reader.onload = () => resolve(reader.result);
+          reader.onerror = () => reject(new Error('Không đọc được nội dung file Excel.'));
+          reader.readAsArrayBuffer(file);
+        });
+      }
+
+      async function loadExcelFromUrl() {
+        await ensureXlsxLibrary();
+        
+        const response = await fetch(EXCEL_FILE + '?v=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) throw new Error('Không đọc được file ' + EXCEL_FILE + '.');
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const records = readWorkbook(workbook);
+        state.loadedFrom = 'auto';
+        state.fileName = EXCEL_FILE;
+        state.dataMode = 'common';
+        updateDataModeUI();
+      }
+
+      async function loadExcelFromFile(file) {
+        if (!file) return;
+        await ensureXlsxLibrary();
+        
+        const arrayBuffer = await readFileAsArrayBuffer(file);
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        const records = readWorkbook(workbook);
+        state.loadedFrom = 'manual';
+        state.fileName = file.name;
+        state.dataMode = 'local_temp';
+        updateDataModeUI();
+        const isEmpty = !records.length;
+      }
+
+      async function initialize() {
+        applyLocalPrefs();
+        updateFacilityPreview();
+        updateSelectedSubjectLabel();
+        updateDataModeUI();
+        try {
+          await loadExcelFromUrl();
+        } catch (error) {
+          console.error(error);
+          
+          state.records = [];
+          state.selectedViolations = {};
+          setSelectedPanelVisible(false);
+          state.loadedFrom = '';
+          state.dataMode = 'common';
+          state.fileName = EXCEL_FILE;
+          updateDataModeUI();
+          setNodeText('totalLoaded', '0');
+          renderSelectedViolationTable();
+          runSearch();
+        }
+      }
+
+      $('btnShowSelectedViolations').addEventListener('click', showSelectedViolationPanel);
+      $('btnClearSelectedViolations').addEventListener('click', clearSelectedViolations);
+      $('btnCloseSelectedViolations').addEventListener('click', closeSelectedViolationPanel);
+      $('btnPrintSelectedViolations').addEventListener('click', printSelectedViolations);
+      $('btnExportSelectedViolations').addEventListener('click', exportSelectedViolationsExcel);
+      $('selectedViolationModal').addEventListener('click', (event) => {
+        if (event.target === $('selectedViolationModal')) closeSelectedViolationPanel();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && state.selectedPanelVisible) closeSelectedViolationPanel();
+      });
+      function handleViolationCheckboxChange(event) {
+        const target = event.target;
+        if (!target || !target.matches('.violation-check')) return;
+        const recordId = String(target.getAttribute('data-record-id') || '').trim();
+        const selectedItems = getSelectedViolationItems();
+        const selectedMatch = selectedItems.find((item) => String(item?.record?.id || '') === recordId);
+        const record = selectedMatch?.record || state.filtered.find((item) => item.id === recordId);
+        if (!record) return;
+        toggleSelectedViolation(record, !!target.checked);
+        runSearch();
+      }
+      $('resultBody').addEventListener('change', handleViolationCheckboxChange);
+      $('selectedViolationBody').addEventListener('change', handleViolationCheckboxChange);
+      $('btnReset').addEventListener('click', resetFilters);
+        const file = event.target.files && event.target.files[0];
+        if (!file) return;
+        try {
+          await loadExcelFromFile(file);
+        } catch (error) {
+          console.error(error);
+        } finally {
+          event.target.value = '';
+        }
+      });
+
+
+      $('facilityName').addEventListener('input', () => {
+        updateFacilityPreview();
+      });
+
+      $('keywordInput').addEventListener('input', () => {
+        setSelectedPanelVisible(false);
+        runSearch();
+      });
+      $('subjectIndividual').addEventListener('change', () => {
+        setSelectedPanelVisible(false);
+        runSearch();
+      });
+      $('subjectOrganization').addEventListener('change', () => {
+        setSelectedPanelVisible(false);
+        runSearch();
+      });
+
+      initialize();
+    })();
+  </script>
+</body>
+</html>
