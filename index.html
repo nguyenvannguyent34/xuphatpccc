@@ -1272,15 +1272,19 @@
         renderSelectedViolationTable();
       }
 
-      function resetFilters() {
-        $('facilityName').value = '';
-        $('keywordInput').value = '';
-        $('subjectIndividual').checked = false;
-        $('subjectOrganization').checked = false;
+            function resetFilters() {
+        if ($('facilityName')) $('facilityName').value = '';
+        if ($('keywordInput')) $('keywordInput').value = '';
+        if ($('subjectIndividual')) $('subjectIndividual').checked = false;
+        if ($('subjectOrganization')) $('subjectOrganization').checked = false;
+        state.selectedViolations = {};
+        setSelectedPanelVisible(false);
         updateFacilityPreview();
         updateSelectedSubjectLabel();
+        renderSelectedViolationTable();
         runSearch();
       }
+
 
       function readWorkbook(workbook) {
         const firstSheetName = workbook.SheetNames && workbook.SheetNames.length ? workbook.SheetNames[0] : null;
@@ -1372,7 +1376,6 @@
         updateDataModeUI();
       }
 
-      async function loadExcelFromFile(file) {
         if (!file) return;
         await ensureXlsxLibrary();
         
@@ -1432,20 +1435,8 @@
       }
       $('resultBody').addEventListener('change', handleViolationCheckboxChange);
       $('selectedViolationBody').addEventListener('change', handleViolationCheckboxChange);
-      $('btnReset').addEventListener('click', resetFilters);
-        const file = event.target.files && event.target.files[0];
-        if (!file) return;
-        try {
-          await loadExcelFromFile(file);
-        } catch (error) {
-          console.error(error);
-        } finally {
-          event.target.value = '';
-        }
-      });
-
-
-      $('facilityName').addEventListener('input', () => {
+            $('btnReset').addEventListener('click', resetFilters);
+$('facilityName').addEventListener('input', () => {
         updateFacilityPreview();
       });
 
