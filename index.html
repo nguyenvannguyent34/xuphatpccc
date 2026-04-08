@@ -488,8 +488,7 @@
                 <label>&nbsp;</label>
                 <button id="btnReset" class="secondary" type="button">Xóa lọc</button>
               </div>
-              <div>
-                <label>&nbsp;</label></div>
+              
             </div>
           </div>
         </div>
@@ -659,37 +658,6 @@
       }
 
       function setLoadStatus() {}
-
-      function readLocalPrefs() {
-        try {
-          const raw = localStorage.getItem(LOCAL_PREF_KEY);
-          if (!raw) return {};
-          const parsed = JSON.parse(raw);
-          return parsed && typeof parsed === 'object' ? parsed : {};
-        } catch (error) {
-          return {};
-        }
-      }
-
-      function saveLocalPrefs() {
-        try {
-          const payload = {
-            facilityName: $('facilityName').value || '',
-            keyword: $('keywordInput').value || '',
-            subjectIndividual: !!$('subjectIndividual').checked,
-            subjectOrganization: !!$('subjectOrganization').checked
-          };
-          localStorage.setItem(LOCAL_PREF_KEY, JSON.stringify(payload));
-        } catch (error) {}
-      }
-
-      function applyLocalPrefs() {
-        const prefs = readLocalPrefs();
-        if (typeof prefs.facilityName === 'string') $('facilityName').value = prefs.facilityName;
-        if (typeof prefs.keyword === 'string') $('keywordInput').value = prefs.keyword;
-        if (typeof prefs.subjectIndividual === 'boolean') $('subjectIndividual').checked = prefs.subjectIndividual;
-        if (typeof prefs.subjectOrganization === 'boolean') $('subjectOrganization').checked = prefs.subjectOrganization;
-      }
 
       function updateDataModeUI() {
         const modeLabel = $('dataModeLabel');
@@ -1272,11 +1240,11 @@
         renderSelectedViolationTable();
       }
 
-            function resetFilters() {
-        if ($('facilityName')) $('facilityName').value = '';
-        if ($('keywordInput')) $('keywordInput').value = '';
-        if ($('subjectIndividual')) $('subjectIndividual').checked = false;
-        if ($('subjectOrganization')) $('subjectOrganization').checked = false;
+      function resetFilters() {
+        $('facilityName').value = '';
+        $('keywordInput').value = '';
+        $('subjectIndividual').checked = false;
+        $('subjectOrganization').checked = false;
         state.selectedViolations = {};
         setSelectedPanelVisible(false);
         updateFacilityPreview();
@@ -1284,7 +1252,6 @@
         renderSelectedViolationTable();
         runSearch();
       }
-
 
       function readWorkbook(workbook) {
         const firstSheetName = workbook.SheetNames && workbook.SheetNames.length ? workbook.SheetNames[0] : null;
@@ -1364,41 +1331,37 @@
 
       async function loadExcelFromUrl() {
         await ensureXlsxLibrary();
-        
-        const response = await fetch('./' + EXCEL_FILE + '?v=' + Date.now(), { cache: 'no-store' });
+        const excelUrl = new URL(EXCEL_FILE, window.location.href).toString();
+        const response = await fetch(excelUrl + (excelUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), { cache: 'no-store' });
         if (!response.ok) throw new Error('Không đọc được file ' + EXCEL_FILE + '.');
         const arrayBuffer = await response.arrayBuffer();
         const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        const records = readWorkbook(workbook);
+        readWorkbook(workbook);
         state.loadedFrom = 'auto';
         state.fileName = EXCEL_FILE;
         state.dataMode = 'common';
         updateDataModeUI();
       }
-
-        if (!file) return;
-        await ensureXlsxLibrary();
-        
-        const arrayBuffer = await readFileAsArrayBuffer(file);
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        const records = readWorkbook(workbook);
-        state.loadedFrom = 'manual';
-        state.fileName = file.name;
-        state.dataMode = 'local_temp';
-        updateDataModeUI();
-        const isEmpty = !records.length;
-      }
-
       async function initialize() {
+        $('facilityName').value = '';
+        $('keywordInput').value = '';
+        $('subjectIndividual').checked = false;
+        $('subjectOrganization').checked = false;
+        state.records = [];
+        state.filtered = [];
+        state.selectedViolations = {};
+        setSelectedPanelVisible(false);
         updateFacilityPreview();
         updateSelectedSubjectLabel();
         updateDataModeUI();
+        renderSelectedViolationTable();
         try {
           await loadExcelFromUrl();
+          runSearch();
         } catch (error) {
           console.error(error);
-          
           state.records = [];
+          state.filtered = [];
           state.selectedViolations = {};
           setSelectedPanelVisible(false);
           state.loadedFrom = '';
@@ -1435,8 +1398,9 @@
       }
       $('resultBody').addEventListener('change', handleViolationCheckboxChange);
       $('selectedViolationBody').addEventListener('change', handleViolationCheckboxChange);
-            $('btnReset').addEventListener('click', resetFilters);
-$('facilityName').addEventListener('input', () => {
+      $('btnReset').addEventListener('click', resetFilters);
+
+      $('facilityName').addEventListener('input', () => {
         updateFacilityPreview();
       });
 
