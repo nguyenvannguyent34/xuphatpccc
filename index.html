@@ -481,7 +481,7 @@
             </div>
             <div class="search-field">
               <label for="keywordInput">Từ khóa hành vi vi phạm</label>
-              <input id="keywordInput" type="search" placeholder="Nhập từ khóa hành vi vi phạm" />
+              <input id="keywordInput" type="search" placeholder="Nhập từ khóa tìm kiếm hành vi vi phạm..." />
             </div>
             <div class="search-actions stack-mobile">
               <div>
@@ -550,8 +550,7 @@
                 <div class="modal-actions">
                   <button id="btnPrintSelectedViolations" class="secondary" type="button">In danh sách</button>
                   <button id="btnExportSelectedViolations" class="secondary" type="button">Xuất Excel</button>
-                  <button id="btnClearSelectedViolations" class="secondary" type="button">Xóa danh sách đã tích</button>
-                  <button id="btnCloseSelectedViolations" class="secondary" type="button">Đóng</button>
+<button id="btnCloseSelectedViolations" class="secondary" type="button">Đóng</button>
                 </div>
               </div>
               <div class="modal-body">
@@ -1092,11 +1091,72 @@
         });
       }
 
-      function printSelectedViolations() {
+            function printSelectedViolations() {
         const items = getSelectedViolationItems();
         if (!items.length) return;
+        const facilityName = ($('facilityName') && $('facilityName').value.trim()) || 'Chưa nhập';
         const rowsHtml = items.map((item, index) => {
           const record = item.record || {};
+          return `
+            <tr>
+              <td class="col-stt">${index + 1}</td>
+              <td>${escapeHtml(facilityName)}</td>
+              <td>${escapeHtml(record.group || '-')}</td>
+              <td>${escapeHtml(record.behavior || '-')}</td>
+              <td>${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
+              <td>${escapeHtml(record.extraPenalty || 'Không có')}</td>
+              <td>${escapeHtml(record.remedy || 'Không có')}</td>
+              <td>${escapeHtml(record.authority || 'Không có')}</td>
+              <td>${escapeHtml(record.legalBasis || '')}</td>
+            </tr>`;
+        }).join('');
+        const win = window.open('', '_blank', 'width=1400,height=900');
+        if (!win) return;
+        win.document.write(`<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Tổng hợp hành vi vi phạm</title>
+<style>
+  body{font-family:"Times New Roman", Times, serif; margin:24px; color:#111;}
+  h1{margin:0 0 8px; text-align:center; font-size:24px;}
+  .meta{margin:0 0 14px; text-align:center; font-size:14px; line-height:1.5;}
+  table{width:100%; border-collapse:collapse; table-layout:fixed;}
+  th,td{border:1px solid #999; padding:8px 6px; font-size:13px; vertical-align:middle; line-height:1.35;}
+  th{text-align:center; background:#f4f4f4;}
+  td{text-align:left; white-space:pre-wrap;}
+  td:first-child, th:first-child{text-align:center; width:48px;}
+</style>
+</head>
+<body>
+  <h1>TỔNG HỢP HÀNH VI VI PHẠM</h1>
+  <div class="meta">
+    Tên cơ sở: ${escapeHtml(facilityName)}<br>
+    Số lỗi vi phạm: ${items.length} | Tổng số tiền phạt: ${escapeHtml(formatMoneyNumber(items.reduce((sum, item) => sum + (getPenaltyAmountData(item.record || {}, getSelectedSubjectValues()).total || 0), 0)))} | Thẩm quyền xử phạt: ${escapeHtml(getHighestAuthorityText(items))}
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>STT</th>
+        <th>Tên cơ sở</th>
+        <th>Nhóm hành vi</th>
+        <th>Hành vi vi phạm</th>
+        <th>Số tiền phạt</th>
+        <th>Hình thức xử phạt bổ sung</th>
+        <th>Biện pháp khắc phục hậu quả</th>
+        <th>Thẩm quyền</th>
+        <th>Căn cứ</th>
+      </tr>
+    </thead>
+    <tbody>${rowsHtml}</tbody>
+  </table>
+</body>
+</html>`);
+        win.document.close();
+        win.focus();
+        setTimeout(() => { try { win.print(); } catch (e) {} }, 300);
+      }
+;
           return `
             <tr>
               <td class="col-stt">${index + 1}</td>
@@ -1375,7 +1435,6 @@
       }
 
       $('btnShowSelectedViolations').addEventListener('click', showSelectedViolationPanel);
-      $('btnClearSelectedViolations').addEventListener('click', clearSelectedViolations);
       $('btnCloseSelectedViolations').addEventListener('click', closeSelectedViolationPanel);
       $('btnPrintSelectedViolations').addEventListener('click', printSelectedViolations);
       $('btnExportSelectedViolations').addEventListener('click', exportSelectedViolationsExcel);
