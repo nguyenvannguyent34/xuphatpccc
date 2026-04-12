@@ -35,7 +35,7 @@
       inset:0;
       background:
         linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.35)),
-        url("pccc-bg.png") center/cover no-repeat;
+        var(--app-bg-image, none) center/cover no-repeat;
       filter:blur(7px) brightness(.65);
       transform:scale(1.04);
       z-index:-2;
@@ -493,7 +493,7 @@
 
   <div class="topbar">
     <div class="topbar-logo">
-      <img src="logo-pccc.png" alt="Logo Cảnh sát PCCC" />
+      <img id="appLogo" alt="Logo Cảnh sát PCCC" />
     </div>
     <div class="topbar-title">
       <h1>Tra cứu xử phạt vi phạm hành chính</h1>
@@ -657,6 +657,30 @@
 
       const $ = (id) => document.getElementById(id);
 
+      function getAppBaseUrl() {
+        const { origin, pathname } = window.location;
+        const safePath = String(pathname || '/');
+        if (!safePath || safePath === '/') return origin + '/';
+        if (safePath.endsWith('/')) return origin + safePath;
+        const lastSegment = safePath.split('/').pop() || '';
+        if (/\.[a-z0-9]+$/i.test(lastSegment)) {
+          return origin + safePath.slice(0, safePath.lastIndexOf('/') + 1);
+        }
+        return origin + safePath + '/';
+      }
+
+      const APP_BASE_URL = getAppBaseUrl();
+
+      function assetUrl(fileName) {
+        return new URL(String(fileName || '').replace(/^\/+/, ''), APP_BASE_URL).toString();
+      }
+
+      function applyStaticAssetPaths() {
+        document.documentElement.style.setProperty('--app-bg-image', 'url("' + assetUrl('pccc-bg.png') + '")');
+        const logo = $('appLogo');
+        if (logo) logo.src = assetUrl('logo-pccc.png');
+      }
+
       function setNodeText(id, value) {
         const node = $(id);
         if (node) node.textContent = String(value ?? '');
@@ -668,7 +692,7 @@
         behavior: ['hanh vi vi pham', 'hanh vi', 'noi dung vi pham', 'mo ta hanh vi'],
         fineUpper: ['muc phat tren', 'muc phat toi da', 'muc phat cao nhat', 'muc phat den'],
         fineLower: ['muc phat duoi', 'muc phat toi thieu', 'muc phat tu', 'muc phat thap nhat'],
-        extraPenalty: ['hinh thuc xu phat bo sung', 'xu phat bo sung', 'hinh thuc bo sung'],
+        extraPenalty: ['hinh thuc xu phat bo sung', 'hinh thuc phat bo sung', 'xu phat bo sung', 'phat bo sung', 'hinh thuc bo sung'],
         remedy: ['bien phap khac phuc hau qua', 'khac phuc hau qua', 'bien phap khac phuc'],
         authority: ['tham quyen', 'co quan co tham quyen', 'tham quyen xu phat', 'nguoi co tham quyen'],
         legalBasis: ['can cu', 'can cu phap ly', 'dieu khoan', 'quy dinh'],
@@ -1458,18 +1482,54 @@ function buildFineHtml(record, selectedSubjects) {
 
       async function loadExcelFromUrl() {
         await ensureXlsxLibrary();
-        const excelUrl = new URL(EXCEL_FILE, window.location.href).toString();
-        const response = await fetch(excelUrl + (excelUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), { cache: 'no-store' });
-        if (!response.ok) throw new Error('Không đọc được file ' + EXCEL_FILE + '.');
-        const arrayBuffer = await response.arrayBuffer();
-        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-        readWorkbook(workbook);
-        state.loadedFrom = 'auto';
-        state.fileName = EXCEL_FILE;
-        state.dataMode = 'common';
-        updateDataModeUI();
+
+        const urlCandidates = [
+          assetUrl(EXCEL_FILE),
+          new URL('./' + EXCEL_FILE, APP_BASE_URL).toString(),
+          new URL(EXCEL_FILE, window.location.origin + '/').toString()
+        ];
+
+        const hostParts = String(window.location.hostname || '').split('.');
+        const githubUser = hostParts.length >= 3 && hostParts[1] === 'github' && hostParts[2] === 'io' ? hostParts[0] : '';
+        const firstPathSegment = String(window.location.pathname || '')
+          .split('/')
+          .filter(Boolean)[0] || '';
+        if (githubUser && firstPathSegment) {
+          urlCandidates.push('https://raw.githubusercontent.com/' + githubUser + '/' + firstPathSegment + '/main/' + EXCEL_FILE);
+          urlCandidates.push('https://github.com/' + githubUser + '/' + firstPathSegment + '/raw/refs/heads/main/' + EXCEL_FILE);
+        }
+
+        const tried = new Set();
+        let lastError = null;
+        for (const candidate of urlCandidates) {
+          const excelUrl = String(candidate || '');
+          if (!excelUrl || tried.has(excelUrl)) continue;
+          tried.add(excelUrl);
+          try {
+            const response = await fetch(excelUrl + (excelUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), {
+              cache: 'no-store',
+              mode: 'cors'
+            });
+            if (!response.ok) {
+              throw new Error('HTTP ' + response.status + ' tại ' + excelUrl);
+            }
+            const arrayBuffer = await response.arrayBuffer();
+            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+            readWorkbook(workbook);
+            state.loadedFrom = 'auto';
+            state.fileName = EXCEL_FILE;
+            state.dataMode = 'common';
+            updateDataModeUI();
+            return;
+          } catch (error) {
+            lastError = error;
+            console.warn('Không tải được dữ liệu Excel từ:', excelUrl, error);
+          }
+        }
+        throw lastError || new Error('Không đọc được file ' + EXCEL_FILE + '.');
       }
       async function initialize() {
+
         $('facilityName').value = '';
         $('keywordInput').value = '';
         $('subjectIndividual').checked = false;
