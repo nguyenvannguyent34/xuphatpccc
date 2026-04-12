@@ -256,7 +256,7 @@
       width:100%;
       border-collapse:collapse;
       background:#fff;
-      min-width:1080px;
+      min-width:1160px;
     }
     th, td{
       border-bottom:1px solid #e6ebf3;
@@ -394,11 +394,19 @@
       height:100%;
     }
     .selected-modal .table-wrap table{
-      min-width:1320px;
+      min-width:1460px;
     }
     .col-stt{width:1%;min-width:44px;max-width:64px;white-space:nowrap;}
     .col-toggle{width:1%;min-width:52px;max-width:64px;white-space:nowrap;}
-    .col-money{width:1%;min-width:112px;max-width:148px;white-space:nowrap;}
+    .col-money{width:1%;min-width:190px;max-width:260px;white-space:normal;}
+    .penalty-cell, .amount-cell{
+      text-align:left !important;
+      white-space:pre-line;
+      overflow-wrap:anywhere;
+      word-break:break-word;
+      line-height:1.55;
+    }
+    .penalty-cell .penalty-line, .amount-cell .penalty-line{display:block;margin:2px 0;}
     .col-authority{width:1%;min-width:116px;max-width:152px;white-space:normal;}
     .modal-summary-grid{
       display:grid;
@@ -882,8 +890,8 @@
               <td class="col-stt">${index + 1}</td>
               <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" checked></td>
               <td class="align-left">${escapeHtml(record.behavior || '-')}</td>
-              <td class="align-left col-money">${escapeHtml(getPenaltyLevelText(record))}</td>
-              <td class="align-left col-money">${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
+              <td class="align-left col-money penalty-cell">${escapeHtml(getPenaltyLevelText(record))}</td>
+              <td class="align-left col-money amount-cell">${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
               <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
               <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
               <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
@@ -909,27 +917,27 @@
 
         if (!showIndividual && !showOrganization) {
           if (individualText) {
-            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+            lines.push('<div class="penalty-line"><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
           }
           if (organizationText) {
-            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+            lines.push('<div class="penalty-line"><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
           }
         } else {
           if (showIndividual && individualText) {
-            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+            lines.push('<div class="penalty-line"><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
           }
           if (showOrganization && organizationText) {
-            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+            lines.push('<div class="penalty-line"><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
           }
         }
         if (!lines.length && record.genericRange) {
-          lines.push('<div>' + escapeHtml(record.genericRange) + '</div>');
+          lines.push('<div class="penalty-line">' + escapeHtml(record.genericRange) + '</div>');
         }
         if (!lines.length && record.fineLower && !record.fineUpper) {
-          lines.push('<div>' + escapeHtml(record.fineLower) + '</div>');
+          lines.push('<div class="penalty-line">' + escapeHtml(record.fineLower) + '</div>');
         }
         if (!lines.length && record.fineUpper && !record.fineLower) {
-          lines.push('<div>' + escapeHtml(record.fineUpper) + '</div>');
+          lines.push('<div class="penalty-line">' + escapeHtml(record.fineUpper) + '</div>');
         }
         return lines.join('') || '<span class="muted">Chưa có dữ liệu mức phạt</span>';
       }
@@ -1296,7 +1304,7 @@
             <td class="align-left">
               <div class="cell-title">${highlightText(record.behavior || '-', keyword)}</div>
             </td>
-            <td class="align-left col-money">${buildFineHtml(record, selectedSubjects)}</td>
+            <td class="align-left col-money penalty-cell">${buildFineHtml(record, selectedSubjects)}</td>
             <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
             <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
             <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
