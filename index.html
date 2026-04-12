@@ -929,18 +929,33 @@
       }
 
       const AUTHORITY_RANK_RULES = [
-        { rank: 1, patterns: [['bo truong']] },
-        { rank: 2, patterns: [['chu tich','uy ban nhan dan','tinh'], ['chu tich','ubnd','tinh'], ['chu tich','thanh pho truc thuoc trung uong']] },
-        { rank: 3, patterns: [['giam doc','cong an','tinh'], ['giam doc','cong an','thanh pho']] },
-        { rank: 4, patterns: [['chu tich','uy ban nhan dan','huyen'], ['chu tich','ubnd','huyen'], ['chu tich','uy ban nhan dan','quan'], ['chu tich','ubnd','quan'], ['chu tich','uy ban nhan dan','thi xa'], ['chu tich','ubnd','thi xa']] },
-        { rank: 5, patterns: [['truong','cong an','huyen'], ['truong','cong an','quan'], ['truong','cong an','thi xa'], ['truong','phong']] },
-        { rank: 6, patterns: [['chu tich','uy ban nhan dan','xa'], ['chu tich','ubnd','xa'], ['chu tich','uy ban nhan dan','phuong'], ['chu tich','ubnd','phuong'], ['chu tich','uy ban nhan dan','thi tran'], ['chu tich','ubnd','thi tran']] },
-        { rank: 7, patterns: [['truong','cong an','xa'], ['truong','cong an','phuong'], ['truong','cong an','thi tran']] }
+        // Thứ tự ưu tiên trong file dữ liệu XPHC.xlsx: Cán bộ < Đội trưởng < Trưởng phòng < Giám đốc.
+        // Rank càng nhỏ thì thẩm quyền càng cao.
+        { rank: 1, patterns: [['giam doc']] },
+        { rank: 2, patterns: [['truong','phong'], ['truong phong']] },
+        { rank: 3, patterns: [['doi','truong'], ['doi truong']] },
+        { rank: 4, patterns: [['can','bo'], ['can bo']] },
+
+        // Giữ lại các mẫu mở rộng để tương thích nếu sau này dữ liệu thay đổi chi tiết hơn.
+        { rank: 10, patterns: [['bo truong']] },
+        { rank: 20, patterns: [['chu tich','uy ban nhan dan','tinh'], ['chu tich','ubnd','tinh'], ['chu tich','thanh pho truc thuoc trung uong']] },
+        { rank: 30, patterns: [['giam doc','cong an','tinh'], ['giam doc','cong an','thanh pho']] },
+        { rank: 40, patterns: [['chu tich','uy ban nhan dan','huyen'], ['chu tich','ubnd','huyen'], ['chu tich','uy ban nhan dan','quan'], ['chu tich','ubnd','quan'], ['chu tich','uy ban nhan dan','thi xa'], ['chu tich','ubnd','thi xa']] },
+        { rank: 50, patterns: [['truong','cong an','huyen'], ['truong','cong an','quan'], ['truong','cong an','thi xa']] },
+        { rank: 60, patterns: [['chu tich','uy ban nhan dan','xa'], ['chu tich','ubnd','xa'], ['chu tich','uy ban nhan dan','phuong'], ['chu tich','ubnd','phuong'], ['chu tich','uy ban nhan dan','thi tran'], ['chu tich','ubnd','thi tran']] },
+        { rank: 70, patterns: [['truong','cong an','xa'], ['truong','cong an','phuong'], ['truong','cong an','thi tran']] }
       ];
 
       function getAuthorityRank(authorityText) {
         const normalized = normalizeText(authorityText);
         if (!normalized) return Number.POSITIVE_INFINITY;
+
+        // Ưu tiên bắt đúng các chức vụ ngắn đang dùng trong dữ liệu để không bị phụ thuộc thứ tự chọn hành vi.
+        if (normalized === 'giam doc' || normalized.includes('giam doc')) return 1;
+        if (normalized === 'truong phong' || normalized.includes('truong phong')) return 2;
+        if (normalized === 'doi truong' || normalized.includes('doi truong')) return 3;
+        if (normalized === 'can bo' || normalized.includes('can bo')) return 4;
+
         for (const rule of AUTHORITY_RANK_RULES) {
           if (rule.patterns.some((tokens) => tokens.every((token) => normalized.includes(token)))) {
             return rule.rank;
