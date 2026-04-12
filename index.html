@@ -1427,13 +1427,20 @@
         setSelectedPanelVisible(false);
         runSearch();
       });
-      $('subjectIndividual').addEventListener('change', () => {
+      function handleExclusiveSubjectChange(activeId, otherId) {
+        const active = $(activeId);
+        const other = $(otherId);
+        if (!active || !other) return;
+        if (active.checked) other.checked = false;
         setSelectedPanelVisible(false);
         runSearch();
+      }
+
+      $('subjectIndividual').addEventListener('change', () => {
+        handleExclusiveSubjectChange('subjectIndividual', 'subjectOrganization');
       });
       $('subjectOrganization').addEventListener('change', () => {
-        setSelectedPanelVisible(false);
-        runSearch();
+        handleExclusiveSubjectChange('subjectOrganization', 'subjectIndividual');
       });
 
       initialize();
