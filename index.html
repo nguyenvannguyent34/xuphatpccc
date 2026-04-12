@@ -406,23 +406,41 @@
     .col-authority{width:130px;min-width:130px;max-width:150px;white-space:normal;}
     .col-legal{min-width:210px;max-width:280px;}
     .col-note{min-width:180px;max-width:240px;}
-    .penalty-cell, .amount-cell{
-      text-align:left !important;
-      white-space:normal !important;
-      overflow-wrap:break-word;
-      word-break:normal;
-      line-height:1.6;
-      min-width:0;
-    }
-    .penalty-cell .penalty-line, .amount-cell .penalty-line{
-      display:block;
-      margin:3px 0;
-      max-width:100%;
-    }
-    .penalty-cell strong, .amount-cell strong{
-      display:inline-block;
-      margin-right:4px;
-    }
+.penalty-cell, .amount-cell{
+  text-align:center !important;
+  vertical-align:middle !important;
+  white-space:normal !important;
+  overflow-wrap:break-word;
+  word-break:normal;
+  line-height:1.6;
+  min-width:0;
+}
+.penalty-cell *, .amount-cell *{
+  text-align:center !important;
+}
+.penalty-cell .penalty-wrap, .amount-cell .penalty-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
+  width:100%;
+  text-align:center !important;
+}
+.penalty-cell .penalty-line, .amount-cell .penalty-line{
+  display:inline-flex;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  margin:0;
+  max-width:100%;
+  text-align:center !important;
+  flex-wrap:wrap;
+}
+.penalty-cell .penalty-label, .amount-cell .penalty-label,
+.penalty-cell .penalty-value, .amount-cell .penalty-value{
+  text-align:center !important;
+}
     .col-stt, .col-toggle, .col-authority{vertical-align:middle !important;}
     th.col-stt, th.col-toggle, th.col-authority{vertical-align:middle !important;}
     .modal-summary-grid{
@@ -907,8 +925,8 @@
               <td class="col-stt">${index + 1}</td>
               <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" checked></td>
               <td class="align-left col-behavior">${escapeHtml(record.behavior || '-')}</td>
-              <td class="align-left col-money penalty-cell">${buildFineHtml(record, getSelectedSubjectValues())}</td>
-              <td class="align-left col-money amount-cell">${buildMultilineHtml(getPenaltyAmountText(record, getSelectedSubjectValues()), 'Chưa xác định')}</td>
+              <td class="col-money penalty-cell">${buildFineHtml(record, getSelectedSubjectValues())}</td>
+              <td class="col-money amount-cell">${buildMultilineHtml(getPenaltyAmountText(record, getSelectedSubjectValues()), 'Chưa xác định')}</td>
               <td class="align-left col-extra">${escapeHtml(record.extraPenalty || 'Không có')}</td>
               <td class="align-left col-remedy">${escapeHtml(record.remedy || 'Không có')}</td>
               <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
@@ -925,7 +943,15 @@
         return '<span class="tag both">Theo dữ liệu</span>';
       }
 
-      function buildFineHtml(record, selectedSubjects) {
+function buildPenaltyLineHtml(label, value) {
+  if (!value) return '';
+  if (!label) {
+    return '<div class="penalty-line"><span class="penalty-value">' + escapeHtml(value) + '</span></div>';
+  }
+  return '<div class="penalty-line"><span class="penalty-label">' + escapeHtml(label) + '</span><span class="penalty-value">' + escapeHtml(value) + '</span></div>';
+}
+
+function buildFineHtml(record, selectedSubjects) {
         const lines = [];
         const showIndividual = selectedSubjects.includes('ca_nhan');
         const showOrganization = selectedSubjects.includes('to_chuc');
@@ -934,38 +960,39 @@
 
         if (!showIndividual && !showOrganization) {
           if (individualText) {
-            lines.push('<div class="penalty-line"><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+            lines.push(buildPenaltyLineHtml('Cá nhân:', individualText));
           }
           if (organizationText) {
-            lines.push('<div class="penalty-line"><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+            lines.push(buildPenaltyLineHtml('Tổ chức:', organizationText));
           }
         } else {
           if (showIndividual && individualText) {
-            lines.push('<div class="penalty-line"><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
+            lines.push(buildPenaltyLineHtml('Cá nhân:', individualText));
           }
           if (showOrganization && organizationText) {
-            lines.push('<div class="penalty-line"><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
+            lines.push(buildPenaltyLineHtml('Tổ chức:', organizationText));
           }
         }
         if (!lines.length && record.genericRange) {
-          lines.push('<div class="penalty-line">' + escapeHtml(record.genericRange) + '</div>');
+          lines.push(buildPenaltyLineHtml('', record.genericRange));
         }
         if (!lines.length && record.fineLower && !record.fineUpper) {
-          lines.push('<div class="penalty-line">' + escapeHtml(record.fineLower) + '</div>');
+          lines.push(buildPenaltyLineHtml('', record.fineLower));
         }
         if (!lines.length && record.fineUpper && !record.fineLower) {
-          lines.push('<div class="penalty-line">' + escapeHtml(record.fineUpper) + '</div>');
+          lines.push(buildPenaltyLineHtml('', record.fineUpper));
         }
-        return lines.join('') || '<span class="muted">Chưa có dữ liệu mức phạt</span>';
+        return lines.length ? '<div class="penalty-wrap">' + lines.join('') + '</div>' : '<span class="muted">Chưa có dữ liệu mức phạt</span>';
       }
 
       function buildMultilineHtml(text, emptyText) {
-        const lines = String(text || '').split(/?
+        const lines = String(text || '').split(/
+?
 /).map((line) => line.trim()).filter(Boolean);
         if (!lines.length) {
           return '<span class="muted">' + escapeHtml(emptyText || 'Chưa có dữ liệu') + '</span>';
         }
-        return lines.map((line) => '<div class="penalty-line">' + escapeHtml(line) + '</div>').join('');
+        return '<div class="penalty-wrap">' + lines.map((line) => buildPenaltyLineHtml('', line)).join('') + '</div>';
       }
 
       function parseMoneyNumber(value) {
@@ -1330,7 +1357,7 @@
             <td class="align-left col-behavior">
               <div class="cell-title">${highlightText(record.behavior || '-', keyword)}</div>
             </td>
-            <td class="align-left col-money penalty-cell">${buildFineHtml(record, selectedSubjects)}</td>
+            <td class="col-money penalty-cell">${buildFineHtml(record, selectedSubjects)}</td>
             <td class="align-left col-extra">${escapeHtml(record.extraPenalty || 'Không có')}</td>
             <td class="align-left col-remedy">${escapeHtml(record.remedy || 'Không có')}</td>
             <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
