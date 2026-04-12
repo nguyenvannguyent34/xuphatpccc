@@ -35,7 +35,7 @@
       inset:0;
       background:
         linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.35)),
-        var(--app-bg-image, none) center/cover no-repeat;
+        url("pccc-bg.png") center/cover no-repeat;
       filter:blur(7px) brightness(.65);
       transform:scale(1.04);
       z-index:-2;
@@ -253,22 +253,19 @@
       background:#fff;
     }
     table{
-      width:max-content;
-      min-width:100%;
+      width:100%;
       border-collapse:collapse;
       background:#fff;
-      table-layout:auto;
+      min-width:1080px;
     }
-    .result-table{min-width:1460px;}
-    .selected-table{min-width:1500px;}
     th, td{
       border-bottom:1px solid #e6ebf3;
       border-right:1px solid rgba(221,227,238,.6);
-      padding:9px 10px;
+      padding:8px 7px;
       text-align:center;
       font-size:15px;
-      vertical-align:top;
-      line-height:1.5;
+      vertical-align:middle;
+      line-height:1.45;
     }
     tr > *:last-child{border-right:none}
     th{
@@ -277,7 +274,7 @@
       top:0;
       z-index:1;
     }
-    td.align-left, th.align-left{text-align:left}
+    td.align-left, th.align-left{text-align:center}
     .result-row:nth-child(odd) td{background:rgba(255,255,255,.96)}
     .result-row:nth-child(even) td{background:rgba(255,245,204,.38)}
     .empty-state{padding:28px 16px;text-align:center;color:var(--muted)}
@@ -296,9 +293,9 @@
     .tag.individual{background:#eef4ff;color:#194185;border-color:#d6e5ff}
     .tag.organization{background:#fff8e8;color:#8b5a00;border-color:#f5e2a8}
     .tag.both{background:#ecfdf3;color:#0f6d33;border-color:#ccebd8}
-    .cell-title{font-weight:700;color:#7d1010;line-height:1.35;text-align:left}
-    .cell-sub{margin-top:4px;color:#667085;font-size:14px;line-height:1.45;text-align:left}
-    .legal{font-size:13px;color:#344054;text-align:left}
+    .cell-title{font-weight:700;color:#7d1010;line-height:1.35;text-align:center}
+    .cell-sub{margin-top:4px;color:#667085;font-size:14px;line-height:1.4;text-align:center}
+    .legal{font-size:13px;color:#344054;text-align:center}
     .select-cell{width:54px;min-width:54px;max-width:54px;text-align:center !important;vertical-align:middle !important;white-space:nowrap;}
     .violation-check{
       width:18px;
@@ -396,53 +393,13 @@
       max-height:none;
       height:100%;
     }
-    .col-stt{width:56px;min-width:56px;max-width:56px;white-space:nowrap;}
-    .col-toggle{width:60px;min-width:60px;max-width:60px;white-space:nowrap;}
-    .col-group{width:150px;min-width:150px;}
-    .col-behavior{min-width:300px;max-width:420px;}
-    .col-money{width:1%;min-width:240px;max-width:360px;white-space:normal;}
-    .col-extra{min-width:220px;max-width:300px;}
-    .col-remedy{min-width:230px;max-width:320px;}
-    .col-authority{width:130px;min-width:130px;max-width:150px;white-space:normal;}
-    .col-legal{min-width:210px;max-width:280px;}
-    .col-note{min-width:180px;max-width:240px;}
-.penalty-cell, .amount-cell{
-  text-align:center !important;
-  vertical-align:middle !important;
-  white-space:normal !important;
-  overflow-wrap:break-word;
-  word-break:normal;
-  line-height:1.6;
-  min-width:0;
-}
-.penalty-cell *, .amount-cell *{
-  text-align:center !important;
-}
-.penalty-cell .penalty-wrap, .amount-cell .penalty-wrap{
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  gap:4px;
-  width:100%;
-  text-align:center !important;
-}
-.penalty-cell .penalty-line, .amount-cell .penalty-line{
-  display:inline-flex;
-  justify-content:center;
-  align-items:center;
-  gap:4px;
-  margin:0;
-  max-width:100%;
-  text-align:center !important;
-  flex-wrap:wrap;
-}
-.penalty-cell .penalty-label, .amount-cell .penalty-label,
-.penalty-cell .penalty-value, .amount-cell .penalty-value{
-  text-align:center !important;
-}
-    .col-stt, .col-toggle, .col-authority{vertical-align:middle !important;}
-    th.col-stt, th.col-toggle, th.col-authority{vertical-align:middle !important;}
+    .selected-modal .table-wrap table{
+      min-width:1320px;
+    }
+    .col-stt{width:1%;min-width:44px;max-width:64px;white-space:nowrap;}
+    .col-toggle{width:1%;min-width:52px;max-width:64px;white-space:nowrap;}
+    .col-money{width:1%;min-width:112px;max-width:148px;white-space:nowrap;}
+    .col-authority{width:1%;min-width:116px;max-width:152px;white-space:normal;}
     .modal-summary-grid{
       display:grid;
       grid-template-columns:repeat(3,minmax(180px,1fr));
@@ -493,7 +450,7 @@
 
   <div class="topbar">
     <div class="topbar-logo">
-      <img id="appLogo" alt="Logo Cảnh sát PCCC" />
+      <img src="logo-pccc.png" alt="Logo Cảnh sát PCCC" />
     </div>
     <div class="topbar-title">
       <h1>Tra cứu xử phạt vi phạm hành chính</h1>
@@ -562,18 +519,18 @@
           </div>
 
           <div class="table-wrap">
-            <table class="result-table">
+            <table>
               <thead>
                 <tr>
                   <th class="col-stt">STT</th>
                   <th class="select-cell col-toggle">Lỗi</th>
-                  <th class="align-left col-group">Nhóm hành vi</th>
-                  <th class="align-left col-behavior">Hành vi vi phạm</th>
-                  <th class="align-left col-money">Mức phạt</th>
-                  <th class="align-left col-extra">Hình thức xử phạt bổ sung</th>
-                  <th class="align-left col-remedy">Biện pháp khắc phục hậu quả</th>
+                  <th class="align-left" style="min-width:150px;">Nhóm hành vi</th>
+                  <th class="align-left" style="min-width:260px;">Hành vi vi phạm</th>
+                  <th class="align-left col-money">Số tiền phạt</th>
+                  <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
+                  <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
                   <th class="align-left col-authority">Thẩm quyền</th>
-                  <th class="align-left col-legal">Căn cứ</th>
+                  <th class="align-left" style="min-width:180px;">Căn cứ</th>
                 </tr>
               </thead>
               <tbody id="resultBody">
@@ -604,7 +561,7 @@
                   </div>
                   <div class="modal-summary-box summary-amount">
                     <div class="label">Tổng số tiền phạt</div>
-                    <div class="value" id="selectedSummaryAmount">0 đ</div>
+                    <div class="value" id="selectedSummaryAmount">0</div>
                   </div>
                   <div class="modal-summary-box summary-authority">
                     <div class="label">Thẩm quyền xử phạt</div>
@@ -612,19 +569,19 @@
                   </div>
                 </div>
                 <div class="table-wrap">
-                  <table class="selected-table">
+                  <table>
                     <thead>
                       <tr>
                         <th class="col-stt">STT</th>
                         <th class="select-cell col-toggle">Lỗi</th>
-                        <th class="align-left col-behavior">Hành vi vi phạm</th>
+                        <th class="align-left" style="min-width:300px;">Hành vi vi phạm</th>
                         <th class="align-left col-money">Mức phạt</th>
                         <th class="align-left col-money">Số tiền phạt</th>
-                        <th class="align-left col-extra">Hình thức xử phạt bổ sung</th>
-                        <th class="align-left col-remedy">Biện pháp khắc phục hậu quả</th>
+                        <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
+                        <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
                         <th class="align-left col-authority">Thẩm quyền</th>
-                        <th class="align-left col-legal">Căn cứ</th>
-                        <th class="align-left hidden col-note" id="selectedViolationNoteHead">Ghi chú</th>
+                        <th class="align-left" style="min-width:180px;">Căn cứ</th>
+                        <th class="align-left hidden" id="selectedViolationNoteHead" style="min-width:180px;">Ghi chú</th>
                       </tr>
                     </thead>
                     <tbody id="selectedViolationBody">
@@ -657,30 +614,6 @@
 
       const $ = (id) => document.getElementById(id);
 
-      function getAppBaseUrl() {
-        const { origin, pathname } = window.location;
-        const safePath = String(pathname || '/');
-        if (!safePath || safePath === '/') return origin + '/';
-        if (safePath.endsWith('/')) return origin + safePath;
-        const lastSegment = safePath.split('/').pop() || '';
-        if (/\.[a-z0-9]+$/i.test(lastSegment)) {
-          return origin + safePath.slice(0, safePath.lastIndexOf('/') + 1);
-        }
-        return origin + safePath + '/';
-      }
-
-      const APP_BASE_URL = getAppBaseUrl();
-
-      function assetUrl(fileName) {
-        return new URL(String(fileName || '').replace(/^\/+/, ''), APP_BASE_URL).toString();
-      }
-
-      function applyStaticAssetPaths() {
-        document.documentElement.style.setProperty('--app-bg-image', 'url("' + assetUrl('pccc-bg.png') + '")');
-        const logo = $('appLogo');
-        if (logo) logo.src = assetUrl('logo-pccc.png');
-      }
-
       function setNodeText(id, value) {
         const node = $(id);
         if (node) node.textContent = String(value ?? '');
@@ -692,7 +625,7 @@
         behavior: ['hanh vi vi pham', 'hanh vi', 'noi dung vi pham', 'mo ta hanh vi'],
         fineUpper: ['muc phat tren', 'muc phat toi da', 'muc phat cao nhat', 'muc phat den'],
         fineLower: ['muc phat duoi', 'muc phat toi thieu', 'muc phat tu', 'muc phat thap nhat'],
-        extraPenalty: ['hinh thuc xu phat bo sung', 'hinh thuc phat bo sung', 'xu phat bo sung', 'phat bo sung', 'hinh thuc bo sung'],
+        extraPenalty: ['hinh thuc xu phat bo sung', 'xu phat bo sung', 'hinh thuc bo sung'],
         remedy: ['bien phap khac phuc hau qua', 'khac phuc hau qua', 'bien phap khac phuc'],
         authority: ['tham quyen', 'co quan co tham quyen', 'tham quyen xu phat', 'nguoi co tham quyen'],
         legalBasis: ['can cu', 'can cu phap ly', 'dieu khoan', 'quy dinh'],
@@ -778,21 +711,12 @@
       }
 
       function normalizePenaltyDisplay(value) {
-        const raw = String(value || '').trim();
-        if (!raw) return '';
-        const plainAmount = parseMoneyNumber(raw);
-        if (Number.isFinite(plainAmount)) return formatMoneyNumber(plainAmount);
-
-        return raw
-          .replace(/(\d[\d.,]*)\s*(đồng|vnđ|vnd|đ)\b/gi, '$1')
+        const text = String(value || '').trim();
+        if (!text) return '';
+        return text
           .replace(/^Từ\s+/i, '')
-          .replace(/^Đến\s+/i, '')
           .replace(/\s+đến\s+/gi, ' - ')
-          .replace(/\s*-\s*/g, ' - ')
-          .replace(/\d[\d.,]*/g, (match) => {
-            const parsed = parseMoneyNumber(match);
-            return Number.isFinite(parsed) ? formatMoneyNumber(parsed) : match;
-          })
+          .replace(/^Đến\s+/i, '')
           .replace(/\s{2,}/g, ' ')
           .trim();
       }
@@ -930,7 +854,7 @@
         }
         const totalPenalty = items.reduce((sum, item) => sum + (getPenaltyAmountData(item.record || {}, getSelectedSubjectValues()).total || 0), 0);
         setNodeText('selectedSummaryCount', String(items.length));
-        setNodeText('selectedSummaryAmount', formatMoneyNumber(items.length ? totalPenalty : 0));
+        setNodeText('selectedSummaryAmount', items.length ? formatMoneyNumber(totalPenalty) : '0');
         setNodeText('selectedSummaryAuthority', getHighestAuthorityText(items));
         if (!items.length) {
           summary.textContent = 'Chưa tích lỗi nào trong danh sách tra cứu.';
@@ -942,19 +866,19 @@
         body.innerHTML = items.map((item, index) => {
           const record = item.record || {};
           const noteCell = hasNotes
-            ? '<td class="align-left col-note">' + escapeHtml(record.note || '') + '</td>'
+            ? '<td class="align-left">' + escapeHtml(record.note || '') + '</td>'
             : '';
           return `
             <tr class="result-row">
               <td class="col-stt">${index + 1}</td>
               <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" checked></td>
-              <td class="align-left col-behavior">${escapeHtml(record.behavior || '-')}</td>
-              <td class="col-money penalty-cell">${buildFineHtml(record, getSelectedSubjectValues())}</td>
-              <td class="col-money amount-cell">${buildMultilineHtml(getPenaltyAmountText(record, getSelectedSubjectValues()), 'Chưa xác định')}</td>
-              <td class="align-left col-extra">${escapeHtml(record.extraPenalty || 'Không có')}</td>
-              <td class="align-left col-remedy">${escapeHtml(record.remedy || 'Không có')}</td>
+              <td class="align-left">${escapeHtml(record.behavior || '-')}</td>
+              <td class="align-left col-money">${escapeHtml(getPenaltyLevelText(record))}</td>
+              <td class="align-left col-money">${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
+              <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
+              <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
               <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
-              <td class="align-left legal col-legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
+              <td class="align-left legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
               ${noteCell}
             </tr>`;
         }).join('');
@@ -967,15 +891,7 @@
         return '<span class="tag both">Theo dữ liệu</span>';
       }
 
-function buildPenaltyLineHtml(label, value) {
-  if (!value) return '';
-  if (!label) {
-    return '<div class="penalty-line"><span class="penalty-value">' + escapeHtml(value) + '</span></div>';
-  }
-  return '<div class="penalty-line"><span class="penalty-label">' + escapeHtml(label) + '</span><span class="penalty-value">' + escapeHtml(value) + '</span></div>';
-}
-
-function buildFineHtml(record, selectedSubjects) {
+      function buildFineHtml(record, selectedSubjects) {
         const lines = [];
         const showIndividual = selectedSubjects.includes('ca_nhan');
         const showOrganization = selectedSubjects.includes('to_chuc');
@@ -984,39 +900,29 @@ function buildFineHtml(record, selectedSubjects) {
 
         if (!showIndividual && !showOrganization) {
           if (individualText) {
-            lines.push(buildPenaltyLineHtml('Cá nhân:', individualText));
+            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
           }
           if (organizationText) {
-            lines.push(buildPenaltyLineHtml('Tổ chức:', organizationText));
+            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
           }
         } else {
           if (showIndividual && individualText) {
-            lines.push(buildPenaltyLineHtml('Cá nhân:', individualText));
+            lines.push('<div><strong>Cá nhân:</strong> ' + escapeHtml(individualText) + '</div>');
           }
           if (showOrganization && organizationText) {
-            lines.push(buildPenaltyLineHtml('Tổ chức:', organizationText));
+            lines.push('<div><strong>Tổ chức:</strong> ' + escapeHtml(organizationText) + '</div>');
           }
         }
         if (!lines.length && record.genericRange) {
-          lines.push(buildPenaltyLineHtml('', record.genericRange));
+          lines.push('<div>' + escapeHtml(record.genericRange) + '</div>');
         }
         if (!lines.length && record.fineLower && !record.fineUpper) {
-          lines.push(buildPenaltyLineHtml('', record.fineLower));
+          lines.push('<div>' + escapeHtml(record.fineLower) + '</div>');
         }
         if (!lines.length && record.fineUpper && !record.fineLower) {
-          lines.push(buildPenaltyLineHtml('', record.fineUpper));
+          lines.push('<div>' + escapeHtml(record.fineUpper) + '</div>');
         }
-        return lines.length ? '<div class="penalty-wrap">' + lines.join('') + '</div>' : '<span class="muted">Chưa có dữ liệu mức phạt</span>';
-      }
-
-      function buildMultilineHtml(text, emptyText) {
-        const lines = String(text || '').split(/
-?
-/).map((line) => line.trim()).filter(Boolean);
-        if (!lines.length) {
-          return '<span class="muted">' + escapeHtml(emptyText || 'Chưa có dữ liệu') + '</span>';
-        }
-        return '<div class="penalty-wrap">' + lines.map((line) => buildPenaltyLineHtml('', line)).join('') + '</div>';
+        return lines.join('') || '<span class="muted">Chưa có dữ liệu mức phạt</span>';
       }
 
       function parseMoneyNumber(value) {
@@ -1031,7 +937,7 @@ function buildFineHtml(record, selectedSubjects) {
       function formatMoneyNumber(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) return '';
-        return Math.round(num).toLocaleString('en-US') + ' đ';
+        return Math.round(num).toLocaleString('en-US');
       }
 
       const AUTHORITY_RANK_RULES = [
@@ -1375,17 +1281,17 @@ function buildFineHtml(record, selectedSubjects) {
           <tr class="result-row">
             <td class="col-stt">${index + 1}</td>
             <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" ${checked ? 'checked' : ''}></td>
-            <td class="align-left col-group">
+            <td class="align-left">
               <div class="cell-title">${escapeHtml(record.group || '-')}</div>
             </td>
-            <td class="align-left col-behavior">
+            <td class="align-left">
               <div class="cell-title">${highlightText(record.behavior || '-', keyword)}</div>
             </td>
-            <td class="col-money penalty-cell">${buildFineHtml(record, selectedSubjects)}</td>
-            <td class="align-left col-extra">${escapeHtml(record.extraPenalty || 'Không có')}</td>
-            <td class="align-left col-remedy">${escapeHtml(record.remedy || 'Không có')}</td>
+            <td class="align-left col-money">${buildFineHtml(record, selectedSubjects)}</td>
+            <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
+            <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
             <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
-            <td class="align-left legal col-legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
+            <td class="align-left legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
           </tr>`;
         }).join('');
         renderSelectedViolationTable();
@@ -1482,54 +1388,18 @@ function buildFineHtml(record, selectedSubjects) {
 
       async function loadExcelFromUrl() {
         await ensureXlsxLibrary();
-
-        const urlCandidates = [
-          assetUrl(EXCEL_FILE),
-          new URL('./' + EXCEL_FILE, APP_BASE_URL).toString(),
-          new URL(EXCEL_FILE, window.location.origin + '/').toString()
-        ];
-
-        const hostParts = String(window.location.hostname || '').split('.');
-        const githubUser = hostParts.length >= 3 && hostParts[1] === 'github' && hostParts[2] === 'io' ? hostParts[0] : '';
-        const firstPathSegment = String(window.location.pathname || '')
-          .split('/')
-          .filter(Boolean)[0] || '';
-        if (githubUser && firstPathSegment) {
-          urlCandidates.push('https://raw.githubusercontent.com/' + githubUser + '/' + firstPathSegment + '/main/' + EXCEL_FILE);
-          urlCandidates.push('https://github.com/' + githubUser + '/' + firstPathSegment + '/raw/refs/heads/main/' + EXCEL_FILE);
-        }
-
-        const tried = new Set();
-        let lastError = null;
-        for (const candidate of urlCandidates) {
-          const excelUrl = String(candidate || '');
-          if (!excelUrl || tried.has(excelUrl)) continue;
-          tried.add(excelUrl);
-          try {
-            const response = await fetch(excelUrl + (excelUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), {
-              cache: 'no-store',
-              mode: 'cors'
-            });
-            if (!response.ok) {
-              throw new Error('HTTP ' + response.status + ' tại ' + excelUrl);
-            }
-            const arrayBuffer = await response.arrayBuffer();
-            const workbook = XLSX.read(arrayBuffer, { type: 'array' });
-            readWorkbook(workbook);
-            state.loadedFrom = 'auto';
-            state.fileName = EXCEL_FILE;
-            state.dataMode = 'common';
-            updateDataModeUI();
-            return;
-          } catch (error) {
-            lastError = error;
-            console.warn('Không tải được dữ liệu Excel từ:', excelUrl, error);
-          }
-        }
-        throw lastError || new Error('Không đọc được file ' + EXCEL_FILE + '.');
+        const excelUrl = new URL(EXCEL_FILE, window.location.href).toString();
+        const response = await fetch(excelUrl + (excelUrl.includes('?') ? '&' : '?') + 'v=' + Date.now(), { cache: 'no-store' });
+        if (!response.ok) throw new Error('Không đọc được file ' + EXCEL_FILE + '.');
+        const arrayBuffer = await response.arrayBuffer();
+        const workbook = XLSX.read(arrayBuffer, { type: 'array' });
+        readWorkbook(workbook);
+        state.loadedFrom = 'auto';
+        state.fileName = EXCEL_FILE;
+        state.dataMode = 'common';
+        updateDataModeUI();
       }
       async function initialize() {
-
         $('facilityName').value = '';
         $('keywordInput').value = '';
         $('subjectIndividual').checked = false;
