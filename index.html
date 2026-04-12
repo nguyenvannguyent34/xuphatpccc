@@ -526,7 +526,7 @@
                   <th class="select-cell col-toggle">Lỗi</th>
                   <th class="align-left" style="min-width:150px;">Nhóm hành vi</th>
                   <th class="align-left" style="min-width:260px;">Hành vi vi phạm</th>
-                  <th class="align-left col-money">Số tiền phạt</th>
+                  <th class="align-left col-money">Mức phạt</th>
                   <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
                   <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
                   <th class="align-left col-authority">Thẩm quyền</th>
@@ -561,7 +561,7 @@
                   </div>
                   <div class="modal-summary-box summary-amount">
                     <div class="label">Tổng số tiền phạt</div>
-                    <div class="value" id="selectedSummaryAmount">0</div>
+                    <div class="value" id="selectedSummaryAmount">0 đ</div>
                   </div>
                   <div class="modal-summary-box summary-authority">
                     <div class="label">Thẩm quyền xử phạt</div>
@@ -711,12 +711,21 @@
       }
 
       function normalizePenaltyDisplay(value) {
-        const text = String(value || '').trim();
-        if (!text) return '';
-        return text
+        const raw = String(value || '').trim();
+        if (!raw) return '';
+        const plainAmount = parseMoneyNumber(raw);
+        if (Number.isFinite(plainAmount)) return formatMoneyNumber(plainAmount);
+
+        return raw
+          .replace(/(\d[\d.,]*)\s*(đồng|vnđ|vnd|đ)\b/gi, '$1')
           .replace(/^Từ\s+/i, '')
-          .replace(/\s+đến\s+/gi, ' - ')
           .replace(/^Đến\s+/i, '')
+          .replace(/\s+đến\s+/gi, ' - ')
+          .replace(/\s*-\s*/g, ' - ')
+          .replace(/\d[\d.,]*/g, (match) => {
+            const parsed = parseMoneyNumber(match);
+            return Number.isFinite(parsed) ? formatMoneyNumber(parsed) : match;
+          })
           .replace(/\s{2,}/g, ' ')
           .trim();
       }
@@ -854,7 +863,7 @@
         }
         const totalPenalty = items.reduce((sum, item) => sum + (getPenaltyAmountData(item.record || {}, getSelectedSubjectValues()).total || 0), 0);
         setNodeText('selectedSummaryCount', String(items.length));
-        setNodeText('selectedSummaryAmount', items.length ? formatMoneyNumber(totalPenalty) : '0');
+        setNodeText('selectedSummaryAmount', formatMoneyNumber(items.length ? totalPenalty : 0));
         setNodeText('selectedSummaryAuthority', getHighestAuthorityText(items));
         if (!items.length) {
           summary.textContent = 'Chưa tích lỗi nào trong danh sách tra cứu.';
@@ -937,7 +946,7 @@
       function formatMoneyNumber(value) {
         const num = Number(value);
         if (!Number.isFinite(num)) return '';
-        return Math.round(num).toLocaleString('en-US');
+        return Math.round(num).toLocaleString('en-US') + ' đ';
       }
 
       const AUTHORITY_RANK_RULES = [
