@@ -350,12 +350,12 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:16px;
+      padding:4px;
       z-index:3000;
     }
     .modal-card{
-      width:min(96vw, 1680px);
-      height:calc(100vh - 32px);
+      width:min(99vw, 1920px);
+      height:calc(100vh - 8px);
       background:#fff;
       border-radius:18px;
       border:1px solid #e1e7f0;
@@ -394,7 +394,7 @@
       height:100%;
     }
     .selected-modal .table-wrap table{
-      min-width:1160px;
+      min-width:1320px;
     }
     .col-stt{width:1%;min-width:44px;max-width:64px;white-space:nowrap;}
     .col-toggle{width:1%;min-width:52px;max-width:64px;white-space:nowrap;}
@@ -574,13 +574,14 @@
                       <tr>
                         <th class="col-stt">STT</th>
                         <th class="select-cell col-toggle">Lỗi</th>
-                        <th class="align-left" style="min-width:150px;">Nhóm hành vi</th>
-                        <th class="align-left" style="min-width:260px;">Hành vi vi phạm</th>
+                        <th class="align-left" style="min-width:300px;">Hành vi vi phạm</th>
+                        <th class="align-left col-money">Mức phạt</th>
                         <th class="align-left col-money">Số tiền phạt</th>
                         <th class="align-left" style="min-width:210px;">Hình thức xử phạt bổ sung</th>
                         <th class="align-left" style="min-width:220px;">Biện pháp khắc phục hậu quả</th>
                         <th class="align-left col-authority">Thẩm quyền</th>
                         <th class="align-left" style="min-width:180px;">Căn cứ</th>
+                        <th class="align-left hidden" id="selectedViolationNoteHead" style="min-width:180px;">Ghi chú</th>
                       </tr>
                     </thead>
                     <tbody id="selectedViolationBody">
@@ -634,7 +635,8 @@
         fineIndividualLower: ['muc phat ca nhan tu', 'ca nhan tu'],
         fineIndividualUpper: ['muc phat ca nhan den', 'ca nhan den'],
         fineOrganizationLower: ['muc phat to chuc tu', 'to chuc tu'],
-        fineOrganizationUpper: ['muc phat to chuc den', 'to chuc den']
+        fineOrganizationUpper: ['muc phat to chuc den', 'to chuc den'],
+        note: ['ghi chu', 'ghi chú', 'luu y', 'ghi chu khac']
       };
 
       function normalizeText(value) {
@@ -752,6 +754,7 @@
           remedy: String(getRowValue(row, HEADER_ALIASES.remedy) || '').trim(),
           authority: String(getRowValue(row, HEADER_ALIASES.authority) || '').trim(),
           legalBasis: String(getRowValue(row, HEADER_ALIASES.legalBasis) || '').trim(),
+          note: String(getRowValue(row, HEADER_ALIASES.note) || '').trim(),
           subject: String(getRowValue(row, HEADER_ALIASES.subject) || '').trim(),
           fineIndividual: String(getRowValue(row, HEADER_ALIASES.fineIndividual) || getRowValueByIncludes(row, [['ca nhan'], ['phat', 'ca nhan']]) || '').trim(),
           fineOrganization: String(getRowValue(row, HEADER_ALIASES.fineOrganization) || getRowValueByIncludes(row, [['to chuc'], ['phat', 'to chuc']]) || '').trim(),
@@ -776,7 +779,7 @@
         record.id = getRecordId(record);
         record.behaviorIndex = normalizeText(record.behavior);
 
-        const hasContent = [record.group, record.behavior, record.extraPenalty, record.remedy, record.authority, record.legalBasis, record.genericRange, record.fineIndividual, record.fineOrganization].some(Boolean);
+        const hasContent = [record.group, record.behavior, record.extraPenalty, record.remedy, record.authority, record.legalBasis, record.note, record.genericRange, record.fineIndividual, record.fineOrganization].some(Boolean);
         return hasContent ? record : null;
       }
 
@@ -825,7 +828,6 @@
         if (isChecked) {
           state.selectedViolations[id] = {
             id,
-            facilityName: $('facilityName').value.trim(),
             record: { ...record }
           };
         } else {
@@ -838,8 +840,14 @@
         const body = $('selectedViolationBody');
         const summary = $('selectedViolationSummaryText');
         const showButton = $('btnShowSelectedViolations');
+        const noteHead = $('selectedViolationNoteHead');
         if (!body || !summary) return;
         const items = getSelectedViolationItems();
+        const hasNotes = items.some((item) => String(item?.record?.note || '').trim());
+        const emptyColspan = hasNotes ? 10 : 9;
+
+        if (noteHead) noteHead.classList.toggle('hidden', !hasNotes);
+
         setNodeText('selectedViolationCount', String(items.length));
         if (showButton) {
           showButton.textContent = items.length ? 'Tổng hợp hành vi vi phạm (' + items.length + ')' : 'Tổng hợp hành vi vi phạm';
@@ -850,24 +858,28 @@
         setNodeText('selectedSummaryAuthority', getHighestAuthorityText(items));
         if (!items.length) {
           summary.textContent = 'Chưa tích lỗi nào trong danh sách tra cứu.';
-          body.innerHTML = '<tr><td colspan="9"><div class="empty-state">Chưa tích lỗi nào.</div></td></tr>';
+          body.innerHTML = '<tr><td colspan="' + emptyColspan + '"><div class="empty-state">Chưa tích lỗi nào.</div></td></tr>';
           setSelectedPanelVisible(false);
           return;
         }
         summary.textContent = '';
         body.innerHTML = items.map((item, index) => {
           const record = item.record || {};
+          const noteCell = hasNotes
+            ? '<td class="align-left">' + escapeHtml(record.note || '') + '</td>'
+            : '';
           return `
             <tr class="result-row">
               <td class="col-stt">${index + 1}</td>
               <td class="select-cell col-toggle"><input class="violation-check" type="checkbox" data-record-id="${escapeHtml(record.id)}" checked></td>
-              <td class="align-left">${escapeHtml(record.group || '-')}</td>
               <td class="align-left">${escapeHtml(record.behavior || '-')}</td>
+              <td class="align-left col-money">${escapeHtml(getPenaltyLevelText(record))}</td>
               <td class="align-left col-money">${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
               <td class="align-left">${escapeHtml(record.extraPenalty || 'Không có')}</td>
               <td class="align-left">${escapeHtml(record.remedy || 'Không có')}</td>
               <td class="align-left col-authority">${escapeHtml(record.authority || 'Không có')}</td>
               <td class="align-left legal">${escapeHtml(record.legalBasis || 'Chưa có căn cứ')}</td>
+              ${noteCell}
             </tr>`;
         }).join('');
       }
@@ -1015,6 +1027,20 @@
         return { lower, upper };
       }
 
+      function getPenaltyLevelText(record) {
+        const primary = record.genericRange || formatRange(record.fineLower, record.fineUpper);
+        if (primary) return primary;
+
+        const parts = [];
+        const individualText = record.fineIndividual || record.fineIndividualRange;
+        const organizationText = record.fineOrganization || record.fineOrganizationRange;
+
+        if (individualText) parts.push('Cá nhân: ' + individualText);
+        if (organizationText) parts.push('Tổ chức: ' + organizationText);
+
+        return parts.join('\n') || 'Chưa có dữ liệu mức phạt';
+      }
+
       function getPenaltyAmountData(record, selectedSubjects) {
         const hasIndividual = selectedSubjects.includes('ca_nhan');
         const hasOrganization = selectedSubjects.includes('to_chuc');
@@ -1091,18 +1117,23 @@
       }
 
       function getSelectedViolationExportRows() {
-        return getSelectedViolationItems().map((item, index) => {
+        const items = getSelectedViolationItems();
+        const hasNotes = items.some((item) => String(item?.record?.note || '').trim());
+
+        return items.map((item, index) => {
           const record = item.record || {};
-          return {
+          const row = {
             'STT': String(index + 1),
-            'Nhóm hành vi': record.group || '',
             'Hành vi vi phạm': record.behavior || '',
+            'Mức phạt': getPenaltyLevelText(record),
             'Số tiền phạt': getPenaltyAmountText(record, getSelectedSubjectValues()),
             'Hình thức xử phạt bổ sung': record.extraPenalty || 'Không có',
             'Biện pháp khắc phục hậu quả': record.remedy || 'Không có',
             'Thẩm quyền': record.authority || 'Không có',
             'Căn cứ': record.legalBasis || ''
           };
+          if (hasNotes) row['Ghi chú'] = record.note || '';
+          return row;
         });
       }
 
@@ -1110,22 +1141,38 @@
         const items = getSelectedViolationItems();
         if (!items.length) return;
         const facilityName = ($('facilityName') && $('facilityName').value.trim()) || 'Chưa nhập';
+        const hasNotes = items.some((item) => String(item?.record?.note || '').trim());
+        const headerCells = [
+          '<th>STT</th>',
+          '<th>Tên cơ sở</th>',
+          '<th>Hành vi vi phạm</th>',
+          '<th>Mức phạt</th>',
+          '<th>Số tiền phạt</th>',
+          '<th>Hình thức xử phạt bổ sung</th>',
+          '<th>Biện pháp khắc phục hậu quả</th>',
+          '<th>Thẩm quyền</th>',
+          '<th>Căn cứ</th>'
+        ];
+        if (hasNotes) headerCells.push('<th>Ghi chú</th>');
+
         const rowsHtml = items.map((item, index) => {
           const record = item.record || {};
+          const noteCell = hasNotes ? '<td>' + escapeHtml(record.note || '') + '</td>' : '';
           return `
             <tr>
               <td class="col-stt">${index + 1}</td>
               <td>${escapeHtml(facilityName)}</td>
-              <td>${escapeHtml(record.group || '-')}</td>
               <td>${escapeHtml(record.behavior || '-')}</td>
+              <td>${escapeHtml(getPenaltyLevelText(record))}</td>
               <td>${escapeHtml(getPenaltyAmountText(record, getSelectedSubjectValues()))}</td>
               <td>${escapeHtml(record.extraPenalty || 'Không có')}</td>
               <td>${escapeHtml(record.remedy || 'Không có')}</td>
               <td>${escapeHtml(record.authority || 'Không có')}</td>
               <td>${escapeHtml(record.legalBasis || '')}</td>
+              ${noteCell}
             </tr>`;
         }).join('');
-        const win = window.open('', '_blank', 'width=1400,height=900');
+        const win = window.open('', '_blank', 'width=1600,height=950');
         if (!win) return;
         win.document.write(`<!DOCTYPE html>
 <html lang="vi">
@@ -1151,17 +1198,7 @@
   </div>
   <table>
     <thead>
-      <tr>
-        <th>STT</th>
-        <th>Tên cơ sở</th>
-        <th>Nhóm hành vi</th>
-        <th>Hành vi vi phạm</th>
-        <th>Số tiền phạt</th>
-        <th>Hình thức xử phạt bổ sung</th>
-        <th>Biện pháp khắc phục hậu quả</th>
-        <th>Thẩm quyền</th>
-        <th>Căn cứ</th>
-      </tr>
+      <tr>${headerCells.join('')}</tr>
     </thead>
     <tbody>${rowsHtml}</tbody>
   </table>
